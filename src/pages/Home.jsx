@@ -140,11 +140,10 @@ function FoodCard({ item }) {
           <span className="font-bold text-gray-900 text-sm">₹{item.price}</span>
           <button
             onClick={handleAdd}
-            className={`px-3 py-1.5 rounded-full text-white text-xs font-bold transition-all duration-300 ${
-              added
+            className={`px-3 py-1.5 rounded-full text-white text-xs font-bold transition-all duration-300 ${added
                 ? "bg-green-500 scale-95"
                 : "bg-orange-500 hover:bg-orange-600 active:scale-95"
-            }`}
+              }`}
           >
             {added ? "✓" : "ADD"}
           </button>
@@ -217,7 +216,7 @@ export default function Home() {
       <div className="bg-orange-500 px-4 pt-4 pb-8">
         <p className="text-orange-100 text-sm font-medium">{greeting},</p>
         <h1 className="text-white text-2xl sm:text-3xl font-extrabold mt-0.5">
-          Vivekananda {emoji}
+          User {emoji}
         </h1>
         <p className="text-orange-100 text-sm mt-0.5">Order ahead, skip the queue!</p>
 
@@ -249,11 +248,10 @@ export default function Home() {
                 setActiveCategory(cat.id);
                 setSearchQuery("");
               }}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
-                activeCategory === cat.id && !searchQuery
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${activeCategory === cat.id && !searchQuery
                   ? "bg-orange-500 text-white border-orange-500 shadow"
                   : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"
-              }`}
+                }`}
             >
               <span>{cat.emoji}</span>
               {cat.label}
