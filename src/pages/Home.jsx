@@ -33,8 +33,8 @@ function getGreeting() {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) return { text: "Good Morning", emoji: "☀️" };
   if (hour >= 12 && hour < 17) return { text: "Good Afternoon", emoji: "👋" };
-  if (hour >= 17 && hour < 21) return { text: "Good Evening", emoji: "🌇" };
-  return { text: "Good Night", emoji: "🌙" };
+  if (hour >= 17 && hour < 21) return { text: "Good Evening", emoji: " " };
+  return { text: "Good Night", emoji: " " };
 }
 
 // ─── Menu Data ────────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ function FoodCard({ item }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col lg:w-[280px] lg:flex-shrink-0">
       <div className="relative">
         <img
           src={item.image}
@@ -141,8 +141,8 @@ function FoodCard({ item }) {
           <button
             onClick={handleAdd}
             className={`px-3 py-1.5 rounded-full text-white text-xs font-bold transition-all duration-300 ${added
-                ? "bg-green-500 scale-95"
-                : "bg-orange-500 hover:bg-orange-600 active:scale-95"
+              ? "bg-green-500 scale-95"
+              : "bg-orange-500 hover:bg-orange-600 active:scale-95"
               }`}
           >
             {added ? "✓" : "ADD"}
@@ -249,8 +249,8 @@ export default function Home() {
                 setSearchQuery("");
               }}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${activeCategory === cat.id && !searchQuery
-                  ? "bg-orange-500 text-white border-orange-500 shadow"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"
+                ? "bg-orange-500 text-white border-orange-500 shadow"
+                : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"
                 }`}
             >
               <span>{cat.emoji}</span>
@@ -261,7 +261,7 @@ export default function Home() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-4 pt-4 pb-24 max-w-lg mx-auto w-full">
+      <div className="flex-1 px-4 pt-4 pb-24 max-w-lg mx-auto lg:max-w-none lg:px-8 w-full">
 
         {/* Search Results */}
         {searchResults !== null && (
@@ -272,7 +272,7 @@ export default function Home() {
                 : `No results for "${searchQuery}"`}
             </h2>
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 lg:flex lg:flex-nowrap lg:overflow-x-auto lg:gap-6 lg:pb-4 lg:scrollbar-hide">
                 {searchResults.map((item) => (
                   <FoodCard key={item.id} item={item} />
                 ))}
@@ -295,7 +295,7 @@ export default function Home() {
                 <span className="text-2xl">{categoryEmojis[section]}</span>
                 <h2 className="text-xl font-extrabold text-gray-800">{section}</h2>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 lg:flex lg:flex-nowrap lg:overflow-x-auto lg:gap-6 lg:pb-4 lg:scrollbar-hide">
                 {menuData[section].map((item) => (
                   <FoodCard key={item.id} item={item} />
                 ))}

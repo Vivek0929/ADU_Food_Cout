@@ -4,7 +4,8 @@ export default function Navbar() {
       {/* Logo + Name */}
       <div className="flex items-center gap-2">
         <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center">
-          <span className="text-white text-lg">🍽️</span>
+          {/* <span className="text-white text-lg">🍽️</span> */}
+          <img src="src/assets/ADU_logo.png" alt="logo" className="w-full h-full object-cover rounded-full" />
         </div>
         <span className="font-bold text-gray-800 text-base sm:text-lg">ADU Food Court</span>
       </div>
