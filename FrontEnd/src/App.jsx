@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CanteenProvider } from "./context/CanteenContext";
 import Home from "./pages/Home";
 import LandingPage from "./components/LandingPage";
@@ -15,7 +15,7 @@ import AdminSlots from "./pages/admin/AdminSlots";
 function App() {
   return (
     <CanteenProvider>
-      <Router>
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />}>
             <Route index element={<LandingPage showHero={true} />} />
@@ -31,7 +31,7 @@ function App() {
             <Route path="slots" element={<AdminSlots />} />
           </Route>
         </Routes>
-      </Router>
+      </BrowserRouter>
     </CanteenProvider>
   );
 }
