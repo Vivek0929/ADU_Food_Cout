@@ -1,6 +1,8 @@
 import { ClipboardList, CheckCircle2, Clock, RotateCcw } from "lucide-react";
+import { useCanteen } from "../context/CanteenContext";
 
-const Orders = ({ orders }) => {
+const Orders = () => {
+  const { orders } = useCanteen();
   // Active order is the most recent one if it's "fresh" (mocking it for now)
   const activeOrder = orders.length > 0 ? orders[0] : null;
   const pastOrders = orders.length > 1 ? orders.slice(1) : [];
@@ -43,7 +45,10 @@ const Orders = ({ orders }) => {
       </div>
       
       <p className="text-center text-sm text-indigo-400 mt-8 font-medium italic">
-        {activeOrder?.items[0].name} {activeOrder?.items.length > 1 ? `& ${activeOrder.items.length - 1} more` : ""} — ready in ~5 mins
+        {activeOrder?.items && activeOrder.items.length > 0 
+          ? <>{activeOrder.items[0].name} {activeOrder.items.length > 1 ? `& ${activeOrder.items.length - 1} more` : ""}</>
+          : <>{activeOrder?.items_list}</>
+        } — ready in ~5 mins
       </p>
     </div>
   );
@@ -72,7 +77,7 @@ const Orders = ({ orders }) => {
                     {order.status || "Delivered"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 font-medium">{order.items || order.items_list}</p>
+                <p className="text-xs text-slate-500 font-medium">{order.items_list}</p>
                 <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider">{order.time || "Yesterday"}</p>
               </div>
               <div className="text-right">

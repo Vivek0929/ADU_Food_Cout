@@ -1,12 +1,21 @@
-import { Home, UtensilsCrossed, ShoppingCart, ClipboardList, User, LogOut } from "lucide-react";
+import { Home, UtensilsCrossed, ShoppingCart, ClipboardList, User } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useCanteen } from "../context/CanteenContext";
 
-const Sidebar = ({ activePage, onPageChange, cartCount }) => {
+const Sidebar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { cart } = useCanteen();
+
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const activePath = location.pathname;
+
   const menuItems = [
-    { icon: <Home size={18} />, label: "Home", id: "home" },
-    { icon: <UtensilsCrossed size={18} />, label: "Menu", id: "menu" },
-    { icon: <ShoppingCart size={18} />, label: "Cart", id: "cart", hasBadge: true },
-    { icon: <ClipboardList size={18} />, label: "Orders", id: "orders" },
-    { icon: <User size={18} />, label: "Profile", id: "profile" },
+    { icon: <Home size={18} />, label: "Home", path: "/" },
+    { icon: <UtensilsCrossed size={18} />, label: "Menu", path: "/menu" },
+    { icon: <ShoppingCart size={18} />, label: "Cart", path: "/cart", hasBadge: true },
+    { icon: <ClipboardList size={18} />, label: "Orders", path: "/orders" },
+    { icon: <User size={18} />, label: "Profile", path: "/profile" },
   ];
 
   return (
@@ -24,38 +33,41 @@ const Sidebar = ({ activePage, onPageChange, cartCount }) => {
 
       {/* Navigation (Compact) */}
       <nav className="flex-1 px-3 py-4 space-y-1.5">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onPageChange(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative group ${
-              activePage === item.id 
-                ? "bg-orange-500 text-white shadow-lg shadow-orange-500/20" 
-                : "text-slate-400 hover:bg-white/5 hover:text-white"
-            }`}
-          >
-            {activePage === item.id && (
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-white rounded-l-full" />
-            )}
-            
-            <div className={`transition-transform ${activePage === item.id ? "scale-105" : "group-hover:scale-105"}`}>
-              {item.icon}
-            </div>
-            <span className="font-bold text-xs tracking-wide">{item.label}</span>
+        {menuItems.map((item) => {
+          const isActive = activePath === item.path;
+          return (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative group ${
+                isActive 
+                  ? "bg-orange-500 text-white shadow-lg shadow-orange-500/20" 
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              {isActive && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 h-6 w-1 bg-white rounded-l-full" />
+              )}
+              
+              <div className={`transition-transform ${isActive ? "scale-105" : "group-hover:scale-105"}`}>
+                {item.icon}
+              </div>
+              <span className="font-bold text-xs tracking-wide">{item.label}</span>
 
-            {item.hasBadge && cartCount > 0 && (
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-orange-600 text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
-                {cartCount}
-              </span>
-            )}
-          </button>
-        ))}
+              {item.hasBadge && cartCount > 0 && (
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-orange-600 text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </nav>
 
       {/* User Section (Compact) */}
       <div className="p-4 border-t border-white/5 bg-black/10">
         <button 
-          onClick={() => onPageChange("profile")}
+          onClick={() => navigate("/profile")}
           className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group text-left"
         >
           <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center font-black text-sm">

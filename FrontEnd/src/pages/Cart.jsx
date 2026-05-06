@@ -1,23 +1,42 @@
 import { ShoppingCart, ArrowLeft, Trash2, Plus, Minus, Clock } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCanteen } from "../context/CanteenContext";
 
-const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
+const Cart = () => {
+  const navigate = useNavigate();
+  const { timeSlots, cart, setCart, orders, placeOrder } = useCanteen();
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [specialInstructions, setSpecialInstructions] = useState("");
 
   const totalItemsInCart = cart.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const total = subtotal; // Assuming no GST based on screenshot UI
+  const total = subtotal;
+  const activeTimeSlots = timeSlots.filter(slot => slot.active);
 
-  const timeSlots = [
-    { id: 1, time: "8:00 AM - 8:30 AM", spots: 22 },
-    { id: 2, time: "8:30 AM - 9:00 AM", spots: 25 },
-    { id: 3, time: "12:00 PM - 12:30 PM", spots: 40 },
-    { id: 4, time: "12:30 PM - 1:00 PM", spots: 40 },
-    { id: 5, time: "1:00 PM - 1:30 PM", spots: 35 },
-    { id: 6, time: "3:30 PM - 4:00 PM", spots: 20 },
-    { id: 7, time: "4:00 PM - 4:30 PM", spots: 20 },
-  ];
+  const handlePlaceOrder = () => {
+    if (cart.length === 0 || !selectedTimeSlot) return;
+    
+    const slotDetails = timeSlots.find(s => s.id === selectedTimeSlot);
+    const slotString = slotDetails ? slotDetails.time : "ASAP";
+
+    const newOrder = {
+      id: `#${1043 + orders.length}`,
+      customer: "Current User", // Mocked for now
+      items: [...cart],
+      items_list: cart.map(item => `${item.name} x${item.quantity}`).join(", "),
+      total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
+        + Math.round(cart.reduce((acc, item) => acc + item.price * item.quantity, 0) * 0.05),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: "Pending",
+      timeSlotId: selectedTimeSlot,
+      timeSlot: slotString,
+      instructions: specialInstructions
+    };
+    placeOrder(newOrder);
+    setCart([]);
+    navigate("/orders");
+  };
 
   if (cart.length === 0) {
     return (
@@ -28,7 +47,7 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
         <h2 className="text-2xl font-black text-slate-900 mb-2">Cart is empty</h2>
         <p className="text-slate-500 mb-8">Add items from the menu to get started</p>
         <button
-          onClick={onNavigateToMenu}
+          onClick={() => navigate("/menu")}
           className="bg-orange-600 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95"
         >
           Browse Menu
@@ -42,14 +61,14 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-slate-100 sticky top-0 bg-white z-10">
         <div className="flex items-center gap-4">
-          <button onClick={onNavigateToMenu} className="p-1 -ml-1">
+          <button onClick={() => navigate("/menu")} className="p-1 -ml-1">
             <ArrowLeft size={20} className="text-slate-800" />
           </button>
           <h1 className="text-lg font-bold text-slate-900">Cart</h1>
         </div>
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => onCartUpdate([])}
+          <button
+            onClick={() => setCart([])}
             className="text-[12px] font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg active:scale-95 transition-all"
           >
             Clear Cart
@@ -78,7 +97,7 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
                 <button
                   onClick={() => {
                     const newCart = cart.map(c => c.id === item.id ? { ...c, quantity: Math.max(0, c.quantity - 1) } : c).filter(c => c.quantity > 0);
-                    onCartUpdate(newCart);
+                    setCart(newCart);
                   }}
                   className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-700"
                 >
@@ -88,7 +107,7 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
                 <button
                   onClick={() => {
                     const newCart = cart.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
-                    onCartUpdate(newCart);
+                    setCart(newCart);
                   }}
                   className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white"
                 >
@@ -97,7 +116,7 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
                 <button
                   onClick={() => {
                     const newCart = cart.filter(c => c.id !== item.id);
-                    onCartUpdate(newCart);
+                    setCart(newCart);
                   }}
                   className="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center text-red-500 ml-1"
                 >
@@ -115,19 +134,27 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
             <h3 className="font-bold text-slate-900 text-sm">Select Pickup Time Slot</h3>
           </div>
           <div className="grid grid-cols-2 gap-3 ">
-            {timeSlots.map((slot) => (
-              <button
-                key={slot.id}
-                onClick={() => setSelectedTimeSlot(slot.id)}
-                className={`p-3 rounded-xl border text-left flex flex-col gap-1 transition-all ${selectedTimeSlot === slot.id
-                  ? "border-orange-600 bg-orange-50/20"
-                  : "border-slate-900"
-                  }`}
-              >
-                <span className="text-[13px] font-bold text-slate-900">{slot.time}</span>
-                <span className="text-[11px] text-slate-900">{slot.spots} spots left</span>
-              </button>
-            ))}
+            {activeTimeSlots.map((slot) => {
+              const spotsLeft = Math.max(0, slot.capacity - slot.booked);
+              return (
+                <button
+                  key={slot.id}
+                  onClick={() => setSelectedTimeSlot(slot.id)}
+                  disabled={spotsLeft === 0}
+                  className={`p-3 rounded-xl border text-left flex flex-col gap-1 transition-all ${selectedTimeSlot === slot.id
+                      ? "border-orange-600 bg-orange-50/20"
+                      : spotsLeft === 0
+                        ? "border-slate-200 bg-slate-50 opacity-50 cursor-not-allowed"
+                        : "border-slate-900"
+                    }`}
+                >
+                  <span className={`text-[13px] font-bold ${spotsLeft === 0 ? "text-slate-400" : "text-slate-900"}`}>{slot.time}</span>
+                  <span className={`text-[11px] ${spotsLeft === 0 ? "text-red-500 font-bold" : "text-slate-900"}`}>
+                    {spotsLeft === 0 ? "Fully Booked" : `${spotsLeft} spots left`}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -162,7 +189,7 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
         {/* Place Order Button */}
         <div className="px-4">
           <button
-            onClick={() => onPlaceOrder({ timeSlot: selectedTimeSlot, instructions: specialInstructions })}
+            onClick={handlePlaceOrder}
             disabled={!selectedTimeSlot}
             className={`w-full py-3.5 rounded-2xl font-bold text-[14px] flex justify-center items-center transition-all ${selectedTimeSlot
               ? "bg-orange-400 border-2 border-orange-500 text-white hover:bg-orange-500 active:scale-[0.98] cursor-pointer shadow-sm"
