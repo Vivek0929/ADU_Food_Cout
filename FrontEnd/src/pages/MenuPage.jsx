@@ -1,112 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, Clock, Plus, Minus, Search } from "lucide-react";
-
-const menuItems = [
-    {
-        id: 1,
-        name: "Masala Dosa",
-        description: "Crispy dosa with spiced potato filling & chutneys",
-        price: 45,
-        rating: 4.5,
-        prepTime: 8,
-        category: "Breakfast",
-        image: "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-        badge: "Bestseller",
-    },
-    {
-        id: 2,
-        name: "Idli Sambar",
-        description: "Soft idlis served with tangy sambar & coconut chutney",
-        price: 35,
-        rating: 4.3,
-        prepTime: 5,
-        category: "Breakfast",
-        image: "https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-    },
-    {
-        id: 3,
-        name: "Poha",
-        description: "Light flattened rice with veggies, nuts & spices",
-        price: 25,
-        rating: 4.2,
-        prepTime: 5,
-        category: "Breakfast",
-        image: "https://images.unsplash.com/photo-1614247310314-c17f87b47ef9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-    },
-    {
-        id: 4,
-        name: "Veg Biryani",
-        description: "Fragrant basmati rice with mixed vegetables & spices",
-        price: 80,
-        rating: 4.6,
-        prepTime: 15,
-        category: "Lunch",
-        image: "https://images.unsplash.com/photo-1666190092689-e3968aa0c32c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-        badge: "Popular",
-    },
-    {
-        id: 5,
-        name: "Paneer Butter Masala",
-        description: "Creamy tomato-based curry with soft paneer cubes",
-        price: 90,
-        rating: 4.7,
-        prepTime: 12,
-        category: "Lunch",
-        image: "https://images.unsplash.com/photo-1708793873401-e8c6c153b76a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-        badge: "Chef's Pick",
-    },
-    {
-        id: 6,
-        name: "Vada Pav",
-        description: "Spiced potato fritter in a bun - Mumbai's iconic street food",
-        price: 20,
-        rating: 4.4,
-        prepTime: 5,
-        category: "Snacks",
-        image: "https://images.unsplash.com/photo-1750767397012-3413ba4fdbc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-    },
-    {
-        id: 7,
-        name: "Mango Lassi",
-        description: "Chilled creamy yogurt drink blended with alphonso mango",
-        price: 40,
-        rating: 4.5,
-        prepTime: 3,
-        category: "Beverages",
-        image: "https://images.unsplash.com/photo-1619898804188-e7bad4bd2127?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-        badge: "New",
-    },
-    {
-        id: 8,
-        name: "Masala Chai",
-        description: "Aromatic Indian spiced tea brewed with ginger & cardamom",
-        price: 15,
-        rating: 4.3,
-        prepTime: 3,
-        category: "Beverages",
-        image: "https://images.unsplash.com/photo-1648192312898-838f9b322f47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-    },
-    {
-        id: 9,
-        name: "Gulab Jamun",
-        description: "Soft milk-solid dumplings soaked in rose sugar syrup",
-        price: 30,
-        rating: 4.6,
-        prepTime: 5,
-        category: "Desserts",
-        image: "https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400",
-        isVeg: true,
-        badge: "Sweet Pick",
-    },
-];
 
 const categories = ["All", "Breakfast", "Lunch", "Snacks", "Beverages", "Desserts"];
 
@@ -129,6 +22,14 @@ const badgeColors = {
 
 export function MenuPage({ searchQuery, cart, onCartUpdate, onSearchChange }) {
     const [activeCategory, setActiveCategory] = useState("All");
+    const [foods, setFoods] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/api/food")
+            .then((res) => res.json())
+            .then((data) => setFoods(data))
+            .catch(err => console.error("Error fetching foods:", err));
+    }, []);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -137,7 +38,7 @@ export function MenuPage({ searchQuery, cart, onCartUpdate, onSearchChange }) {
         return "Good Evening";
     };
 
-    const filteredItems = menuItems.filter((item) => {
+    const filteredItems = foods.filter((item) => {
         const matchCategory = activeCategory === "All" || item.category === activeCategory;
         const matchSearch =
             searchQuery === "" ||

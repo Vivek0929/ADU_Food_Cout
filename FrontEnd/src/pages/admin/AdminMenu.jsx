@@ -16,33 +16,60 @@ const AdminMenu = () => {
     image: "",
     prepTime: "",
     category: "Lunch",
-    vegetarian: true,
-    active: true
+    isVegetarian: true,
+    isAvailable: true,
   });
 
   const filteredItems = menuItems.filter(item => 
     activeCategory === "All" || item.category === activeCategory
   );
 
-  const handleAddItem = (e) => {
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewItem({
+      ...newItem,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleAddItem = async (e) => {
     e.preventDefault();
     if (!newItem.name || !newItem.price) return;
 
-    addMenuItem({
-      name: newItem.name,
-      description: newItem.description || "A delicious meal",
-      price: Number(newItem.price),
-      image: newItem.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
-      prepTime: Number(newItem.prepTime) || 10,
-      category: newItem.category,
-      active: newItem.active,
-      rating: 4.5 // default mock rating
-    });
+    try {
+      const response = await fetch("http://localhost:3000/api/food", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newItem),
+      });
 
-    setShowModal(false);
-    setNewItem({
-      name: "", description: "", price: "", image: "", prepTime: "", category: "Lunch", vegetarian: true, active: true
-    });
+      const data = await response.json();
+      console.log(data);
+      alert("Food Added Successfully");
+      
+      setShowModal(false);
+      setNewItem({
+        name: "",
+        description: "",
+        price: "",
+        image: "",
+        prepTime: "",
+        category: "Lunch",
+        isVegetarian: true,
+        isAvailable: true,
+      });
+      // Optionally refresh the menu items from context if needed
+      if (addMenuItem) {
+        // This is a mock update to keep the context in sync if it's purely local
+        // but ideally the context should fetch from backend too
+        addMenuItem({ ...newItem, id: data.id });
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error adding food item");
+    }
   };
 
   return (
@@ -128,10 +155,11 @@ const AdminMenu = () => {
                 <label className="block text-[13px] font-bold text-slate-500 mb-1.5">Item Name</label>
                 <input 
                   type="text" 
+                  name="name"
                   required
                   placeholder="Item Name"
                   value={newItem.name}
-                  onChange={e => setNewItem({...newItem, name: e.target.value})}
+                  onChange={handleChange}
                   className="w-full bg-[#F6F5F2] border-none rounded-xl px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -140,9 +168,10 @@ const AdminMenu = () => {
                 <label className="block text-[13px] font-bold text-slate-500 mb-1.5">Description</label>
                 <input 
                   type="text" 
+                  name="description"
                   placeholder="Description"
                   value={newItem.description}
-                  onChange={e => setNewItem({...newItem, description: e.target.value})}
+                  onChange={handleChange}
                   className="w-full bg-[#F6F5F2] border-none rounded-xl px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -151,10 +180,11 @@ const AdminMenu = () => {
                 <label className="block text-[13px] font-bold text-slate-500 mb-1.5">Price (₹)</label>
                 <input 
                   type="number" 
+                  name="price"
                   required
                   placeholder="Price (₹)"
                   value={newItem.price}
-                  onChange={e => setNewItem({...newItem, price: e.target.value})}
+                  onChange={handleChange}
                   className="w-full bg-[#F6F5F2] border-none rounded-xl px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -163,9 +193,10 @@ const AdminMenu = () => {
                 <label className="block text-[13px] font-bold text-slate-500 mb-1.5">Image URL</label>
                 <input 
                   type="text" 
+                  name="image"
                   placeholder="Image URL"
                   value={newItem.image}
-                  onChange={e => setNewItem({...newItem, image: e.target.value})}
+                  onChange={handleChange}
                   className="w-full bg-[#F6F5F2] border-none rounded-xl px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -174,9 +205,10 @@ const AdminMenu = () => {
                 <label className="block text-[13px] font-bold text-slate-500 mb-1.5">Prep Time (min)</label>
                 <input 
                   type="number" 
+                  name="prepTime"
                   placeholder="10"
                   value={newItem.prepTime}
-                  onChange={e => setNewItem({...newItem, prepTime: e.target.value})}
+                  onChange={handleChange}
                   className="w-full bg-[#F6F5F2] border-none rounded-xl px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -184,8 +216,9 @@ const AdminMenu = () => {
               <div>
                 <label className="block text-[13px] font-bold text-slate-500 mb-1.5">Category</label>
                 <select 
+                  name="category"
                   value={newItem.category}
-                  onChange={e => setNewItem({...newItem, category: e.target.value})}
+                  onChange={handleChange}
                   className="w-full bg-[#F6F5F2] border-none rounded-xl px-4 py-3 text-[14px] text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 appearance-none"
                 >
                   <option value="Breakfast">Breakfast</option>
@@ -200,8 +233,9 @@ const AdminMenu = () => {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input 
                     type="checkbox" 
-                    checked={newItem.vegetarian}
-                    onChange={e => setNewItem({...newItem, vegetarian: e.target.checked})}
+                    name="isVegetarian"
+                    checked={newItem.isVegetarian}
+                    onChange={handleChange}
                     className="w-5 h-5 accent-green-600 cursor-pointer"
                   />
                   <span className="text-[14px] font-medium text-slate-900">Vegetarian</span>
@@ -210,8 +244,9 @@ const AdminMenu = () => {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input 
                     type="checkbox" 
-                    checked={newItem.active}
-                    onChange={e => setNewItem({...newItem, active: e.target.checked})}
+                    name="isAvailable"
+                    checked={newItem.isAvailable}
+                    onChange={handleChange}
                     className="w-5 h-5 accent-orange-600 cursor-pointer"
                   />
                   <span className="text-[14px] font-medium text-slate-900">Available</span>

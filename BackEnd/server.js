@@ -33,17 +33,48 @@ app.get("/api/food", async (req, res) => {
 
 // ADD FOOD
 app.post("/api/food", async (req, res) => {
-  const { name, price, category, image } = req.body;
+  const {
+    name,
+    description,
+    price,
+    image,
+    prepTime,
+    category,
+    isVegetarian,
+    isAvailable
+  } = req.body;
 
   try {
     const [result] = await pool.query(
-      "INSERT INTO foods (name, price, category, image) VALUES (?, ?, ?, ?)",
-      [name, price, category, image]
+      `
+      INSERT INTO foods
+      (
+        name,
+        description,
+        price,
+        image,
+        prepTime,
+        category,
+        isVegetarian,
+        isAvailable
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        name,
+        description,
+        price,
+        image,
+        prepTime,
+        category,
+        isVegetarian,
+        isAvailable
+      ]
     );
 
     res.json({
-      message: "Food added successfully",
-      id: result.insertId,
+      message: "Food Added Successfully",
+      id: result.insertId
     });
 
   } catch (error) {
