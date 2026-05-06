@@ -6,29 +6,32 @@ import pool from "./db.js";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// Test route
+const PORT = process.env.PORT || 3000;
+
+
+// TEST ROUTE
 app.get("/", (req, res) => {
-  res.send("MySQL API running ✅");
+  res.send("Server running ✅");
 });
 
 
-// 🔹 GET all food
+// GET ALL FOODS
 app.get("/api/food", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM foods");
     res.json(rows);
-  } catch (err) {
-    res.status(500).json(err);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 });
 
 
-// 🔹 ADD food
+// ADD FOOD
 app.post("/api/food", async (req, res) => {
   const { name, price, category, image } = req.body;
 
@@ -38,24 +41,19 @@ app.post("/api/food", async (req, res) => {
       [name, price, category, image]
     );
 
-    res.json({ id: result.insertId });
-  } catch (err) {
-    res.status(500).json(err);
+    res.json({
+      message: "Food added successfully",
+      id: result.insertId,
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 });
 
 
-// 🔹 DELETE food
-app.delete("/api/food/:id", async (req, res) => {
-  try {
-    await pool.query("DELETE FROM foods WHERE id = ?", [req.params.id]);
-    res.json({ message: "Deleted" });
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
 
-
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
