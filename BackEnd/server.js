@@ -1,15 +1,59 @@
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import pool from "./db.js";
+
+dotenv.config();
+
 const app = express();
-const port = 3000;
 
-app.get('/', (req, res) => {
-    res.send('hello, WellCome to ADU Food Court');
+app.use(cors());
+app.use(express.json());
+
+const PORT = process.env.PORT || 3000;
+
+
+// TEST ROUTE
+app.get("/", (req, res) => {
+  res.send("Server running ✅");
 });
 
-app.get('/test', (req, res) => {
-    res.send('This is  for testing');
+
+// GET ALL FOODS
+app.get("/api/food", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM foods");
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 });
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+
+// ADD FOOD
+app.post("/api/food", async (req, res) => {
+  const { name, price, category, image } = req.body;
+
+  try {
+    const [result] = await pool.query(
+      "INSERT INTO foods (name, price, category, image) VALUES (?, ?, ?, ?)",
+      [name, price, category, image]
+    );
+
+    res.json({
+      message: "Food added successfully",
+      id: result.insertId,
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
