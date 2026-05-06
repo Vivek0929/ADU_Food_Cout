@@ -1,19 +1,8 @@
 import { useState } from "react";
 import { Star, Clock, Plus, Minus, Search } from "lucide-react";
+import { useCanteen } from "../context/CanteenContext";
 
 // ─── Menu Data ────────────────────────────────────────────────────────────────
-const MENU_ITEMS = [
-  { id: 1, name: "Masala Dosa", description: "Crispy dosa with spiced potato filling", price: 45, rating: 4.5, prepTime: 8, category: "Breakfast", badge: "Bestseller", image: "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop" },
-  { id: 2, name: "Idli Sambar", description: "Soft idlis with tangy sambar & chutney", price: 35, rating: 4.3, prepTime: 5, category: "Breakfast", badge: null, image: "https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?w=400&h=300&fit=crop" },
-  { id: 3, name: "Poha", description: "Light flattened rice with veggies & nuts", price: 25, rating: 4.2, prepTime: 5, category: "Breakfast", badge: null, image: "https://images.unsplash.com/photo-1614247310314-c17f87b47ef9?w=400&h=300&fit=crop" },
-  { id: 4, name: "Veg Biryani", description: "Fragrant basmati rice with vegetables", price: 80, rating: 4.6, prepTime: 15, category: "Lunch", badge: "Popular", image: "https://images.unsplash.com/photo-1666190092689-e3968aa0c32c?w=400&h=300&fit=crop" },
-  { id: 5, name: "Paneer Butter Masala", description: "Creamy tomato curry with soft paneer", price: 90, rating: 4.7, prepTime: 12, category: "Lunch", badge: "Chef's Pick", image: "https://images.unsplash.com/photo-1708793873401-e8c6c153b76a?w=400&h=300&fit=crop" },
-  { id: 6, name: "Vada Pav", description: "Spiced potato fritter in a bun", price: 20, rating: 4.4, prepTime: 5, category: "Snacks", badge: null, image: "https://images.unsplash.com/photo-1750767397012-3413ba4fdbc7?w=400&h=300&fit=crop" },
-  { id: 7, name: "Mango Lassi", description: "Chilled creamy yogurt blended with mango", price: 40, rating: 4.5, prepTime: 3, category: "Beverages", badge: "New", image: "https://images.unsplash.com/photo-1619898804188-e7bad4bd2127?w=400&h=300&fit=crop" },
-  { id: 8, name: "Masala Chai", description: "Aromatic Indian spiced tea", price: 15, rating: 4.3, prepTime: 3, category: "Beverages", badge: null, image: "https://images.unsplash.com/photo-1648192312898-838f9b322f47?w=400&h=300&fit=crop" },
-  { id: 9, name: "Gulab Jamun", description: "Soft milk dumplings in rose sugar syrup", price: 30, rating: 4.6, prepTime: 5, category: "Desserts", badge: "Sweet Pick", image: "https://images.unsplash.com/photo-1666190092159-3171cf0fbb12?w=400&h=300&fit=crop" },
-];
-
 const CATEGORIES = ["All", "Breakfast", "Lunch", "Snacks", "Beverages", "Desserts"];
 
 const CATEGORY_EMOJI = { All: "🍽️", Breakfast: "🌅", Lunch: "☀️", Snacks: "🍿", Beverages: "🥤", Desserts: "🍮" };
@@ -26,16 +15,15 @@ const BADGE_STYLE = {
   "Sweet Pick": { bg: "#FDF2F8", color: "#A21CAF" },
 };
 
-export default function LandingPage({ cart, onCartUpdate, showHero = true }) {
+export default function LandingPage({ showHero = true }) {
+  const { menuItems, cart, setCart } = useCanteen();
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
 
-
-  const filtered = MENU_ITEMS.filter(item => {
+  const filtered = menuItems.filter(item => {
     const matchCat = activeCategory === "All" || item.category === activeCategory;
     const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch;
@@ -51,7 +39,7 @@ export default function LandingPage({ cart, onCartUpdate, showHero = true }) {
   const getQty = (id) => cart.find(c => c.id === id)?.quantity ?? 0;
   const addItem = (item) => {
     const ex = cart.find(c => c.id === item.id);
-    onCartUpdate(ex
+    setCart(ex
       ? cart.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c)
       : [...cart, { ...item, quantity: 1 }]
     );
@@ -59,7 +47,7 @@ export default function LandingPage({ cart, onCartUpdate, showHero = true }) {
   const removeItem = (id) => {
     const ex = cart.find(c => c.id === id);
     if (!ex) return;
-    onCartUpdate(ex.quantity === 1
+    setCart(ex.quantity === 1
       ? cart.filter(c => c.id !== id)
       : cart.map(c => c.id === id ? { ...c, quantity: c.quantity - 1 } : c)
     );
@@ -157,7 +145,15 @@ export default function LandingPage({ cart, onCartUpdate, showHero = true }) {
                     <div key={item.id} className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:shadow-orange-100 lg:hover:-translate-y-1 transition-all duration-300">
                       {/* Image Section */}
                       <div className="relative h-32 sm:h-40 lg:h-48 overflow-hidden">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={item.image} alt={item.name} className={`w-full h-full object-cover transition-transform duration-500 ${!item.active ? 'grayscale opacity-80' : 'group-hover:scale-105'}`} />
+                        
+                        {!item.active && (
+                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
+                            <span className="bg-black/80 text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full tracking-wide">
+                              Unavailable
+                            </span>
+                          </div>
+                        )}
                         
                         {/* Veg Indicator */}
                         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 w-5 h-5 sm:w-6 sm:h-6 border-2 border-green-500 bg-white rounded-md sm:rounded-lg flex items-center justify-center shadow">
@@ -204,7 +200,12 @@ export default function LandingPage({ cart, onCartUpdate, showHero = true }) {
                           {qty === 0 ? (
                             <button
                               onClick={() => addItem(item)}
-                              className="bg-orange-500 hover:bg-orange-600 active:scale-95 text-white text-[10px] sm:text-xs font-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl shadow-sm shadow-orange-200 transition-all"
+                              disabled={!item.active}
+                              className={`text-[10px] sm:text-xs font-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl transition-all ${
+                                !item.active 
+                                  ? "bg-slate-100 text-slate-400 cursor-not-allowed" 
+                                  : "bg-orange-500 hover:bg-orange-600 active:scale-95 text-white shadow-sm shadow-orange-200"
+                              }`}
                             >
                               ADD
                             </button>
