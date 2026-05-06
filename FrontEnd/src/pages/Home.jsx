@@ -39,9 +39,9 @@ const Home = () => {
       {/* ════════════════════════════════════════════════════════
           MOBILE / TABLET layout — Bottom nav (below lg)
           ════════════════════════════════════════════════════════ */}
-      <div className="flex lg:hidden flex-col h-screen bg-[#F9F9FB] overflow-hidden">
+      <div className="lg:hidden bg-[#F9F9FB] min-h-screen pt-[60px] pb-[60px]">
         {/* Mobile top-bar */}
-        <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100 shrink-0">
+        <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100 shadow-sm">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center shadow shadow-orange-200">
               <UtensilsCrossed size={16} className="text-white" />
@@ -74,12 +74,12 @@ const Home = () => {
         </header>
 
         {/* Mobile page content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="h-full">
           <Outlet />
         </main>
 
         {/* Mobile bottom navigation bar */}
-        <nav className="sticky bottom-0 z-50 w-full bg-white border-t border-slate-100 px-2 pb-2 pt-1 grid grid-cols-5 gap-1 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 px-2 pb-2 pt-1 grid grid-cols-5 gap-1 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           {mobileNav.map(({ id, path, icon: Icon, label }) => {
             const isActive = activePath === path;
             return (
