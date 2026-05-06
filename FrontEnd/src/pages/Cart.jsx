@@ -1,21 +1,35 @@
-import { ShoppingCart, ArrowLeft, Trash2, ChevronRight } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Trash2, Plus, Minus, Clock } from "lucide-react";
+import { useState } from "react";
 
 const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [specialInstructions, setSpecialInstructions] = useState("");
+
+  const totalItemsInCart = cart.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const gst = Math.round(subtotal * 0.05);
-  const total = subtotal + gst;
+  const total = subtotal; // Assuming no GST based on screenshot UI
+
+  const timeSlots = [
+    { id: 1, time: "8:00 AM - 8:30 AM", spots: 22 },
+    { id: 2, time: "8:30 AM - 9:00 AM", spots: 25 },
+    { id: 3, time: "12:00 PM - 12:30 PM", spots: 40 },
+    { id: 4, time: "12:30 PM - 1:00 PM", spots: 40 },
+    { id: 5, time: "1:00 PM - 1:30 PM", spots: 35 },
+    { id: 6, time: "3:30 PM - 4:00 PM", spots: 20 },
+    { id: 7, time: "4:00 PM - 4:30 PM", spots: 20 },
+  ];
 
   if (cart.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#F8F9FF]">
-        <div className="w-24 h-24 bg-white rounded-[2rem] shadow-sm flex items-center justify-center mb-6">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white h-full">
+        <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6">
           <ShoppingCart className="text-slate-300" size={40} />
         </div>
         <h2 className="text-2xl font-black text-slate-900 mb-2">Cart is empty</h2>
         <p className="text-slate-500 mb-8">Add items from the menu to get started</p>
         <button
           onClick={onNavigateToMenu}
-          className="bg-orange-500 text-white px-8 py-3 rounded-2xl font-bold hover:bg-orange-600 shadow-xl shadow-indigo-100 transition-all active:scale-95"
+          className="bg-orange-600 text-white px-8 py-3 rounded-2xl font-bold transition-all active:scale-95"
         >
           Browse Menu
         </button>
@@ -24,76 +38,130 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
   }
 
   return (
-    <div className="flex-1 p-8 bg-[#F8F9FF] overflow-y-auto">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-black text-slate-900">Your Cart</h1>
-          <button
-            onClick={() => onCartUpdate([])}
-            className="text-slate-400 hover:text-red-500 transition-colors flex items-center gap-2 text-sm font-bold"
-          >
-            <Trash2 size={16} /> Clear All
+    <div className="flex flex-col bg-white h-full overflow-y-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-slate-100 sticky top-0 bg-white z-10">
+        <div className="flex items-center gap-4">
+          <button onClick={onNavigateToMenu} className="p-1 -ml-1">
+            <ArrowLeft size={20} className="text-slate-800" />
           </button>
+          <h1 className="text-lg font-bold text-slate-900">Cart</h1>
         </div>
+        <div className="relative">
+          <ShoppingCart size={22} className="text-slate-800" />
+          {totalItemsInCart > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              {totalItemsInCart}
+            </span>
+          )}
+        </div>
+      </div>
 
-        <div className="space-y-4 mb-8">
+      <div className="max-w-2xl mx-auto w-full pb-8">
+        {/* Cart Items */}
+        <div className="flex flex-col">
           {cart.map((item) => (
-            <div key={item.id} className="bg-white p-4 rounded-3xl border border-slate-100 flex items-center gap-4 shadow-sm">
-              <img src={item.image} alt={item.name} className="w-20 h-20 rounded-2xl object-cover" />
-              <div className="flex-1">
-                <h3 className="font-bold text-slate-900">{item.name}</h3>
-                <p className="text-xs text-slate-400 font-medium">₹{item.price} × {item.quantity}</p>
+            <div key={item.id} className="flex items-center justify-between p-4 border-b border-slate-100 mx-4">
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">{item.name}</h3>
+                <p className="text-orange-500 font-bold text-sm mt-0.5">₹{item.price.toFixed(2)}</p>
               </div>
-              <div className="text-right">
-                <p className="font-black text-indigo-600">₹{item.price * item.quantity}</p>
-                <div className="flex items-center gap-2 mt-2 bg-slate-50 rounded-lg p-1">
-                  <button
-                    onClick={() => {
-                      const newCart = cart.map(c => c.id === item.id ? { ...c, quantity: Math.max(0, c.quantity - 1) } : c).filter(c => c.quantity > 0);
-                      onCartUpdate(newCart);
-                    }}
-                    className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-indigo-600"
-                  >
-                    -
-                  </button>
-                  <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
-                  <button
-                    onClick={() => {
-                      const newCart = cart.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
-                      onCartUpdate(newCart);
-                    }}
-                    className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-indigo-600"
-                  >
-                    +
-                  </button>
-                </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    const newCart = cart.map(c => c.id === item.id ? { ...c, quantity: Math.max(0, c.quantity - 1) } : c).filter(c => c.quantity > 0);
+                    onCartUpdate(newCart);
+                  }}
+                  className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-700"
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
+                <button
+                  onClick={() => {
+                    const newCart = cart.map(c => c.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
+                    onCartUpdate(newCart);
+                  }}
+                  className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-white"
+                >
+                  <Plus size={14} />
+                </button>
+                <button
+                  onClick={() => {
+                    const newCart = cart.filter(c => c.id !== item.id);
+                    onCartUpdate(newCart);
+                  }}
+                  className="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center text-red-500 ml-1"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-          <div className="space-y-3 mb-6">
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500 font-medium">Subtotal</span>
-              <span className="text-slate-900 font-bold">₹{subtotal}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500 font-medium">GST (5%)</span>
-              <span className="text-slate-900 font-bold">₹{gst}</span>
-            </div>
-            <div className="pt-3 border-t border-slate-50 flex justify-between items-center">
-              <span className="text-lg font-black text-slate-900">Total</span>
-              <span className="text-2xl font-black text-indigo-600">₹{total}</span>
-            </div>
+        {/* Time Slot Selection */}
+        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mt-6 mb-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock size={16} className="text-orange-500" />
+            <h3 className="font-bold text-slate-900 text-sm">Select Pickup Time Slot</h3>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            {timeSlots.map((slot) => (
+              <button
+                key={slot.id}
+                onClick={() => setSelectedTimeSlot(slot.id)}
+                className={`p-3 rounded-xl border text-left flex flex-col gap-1 transition-all ${selectedTimeSlot === slot.id
+                  ? "border-orange-400 bg-orange-50/20"
+                  : "border-slate-100 hover:border-slate-200"
+                  }`}
+              >
+                <span className="text-[13px] font-bold text-slate-800">{slot.time}</span>
+                <span className="text-[11px] text-slate-400">{slot.spots} spots left</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
+        {/* Special Instructions */}
+        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mb-4">
+          <h3 className="font-bold text-slate-900 text-[13px] mb-3">Special Instructions</h3>
+          <textarea
+            value={specialInstructions}
+            onChange={(e) => setSpecialInstructions(e.target.value)}
+            placeholder="Any allergies or special requests..."
+            className="w-full p-4 bg-[#F2F0EB] rounded-xl border-none focus:outline-none text-[13px] placeholder:text-slate-500 resize-none h-[88px]"
+          ></textarea>
+        </div>
+
+        {/* Bill Summary */}
+        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mb-6">
+          <h3 className="font-bold text-slate-900 text-[13px] mb-4">Bill Summary</h3>
+          <div className="space-y-3 mb-4">
+            {cart.map(item => (
+              <div key={item.id} className="flex justify-between text-[13px] text-slate-500">
+                <span>{item.name} × {item.quantity}</span>
+                <span>₹{(item.price * item.quantity).toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="pt-3 border-t border-slate-100 flex justify-between items-center">
+            <span className="font-bold text-slate-900 text-[13px]">Total</span>
+            <span className="font-bold text-orange-500 text-[13px]">₹{total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Place Order Button */}
+        <div className="px-4">
           <button
-            onClick={onPlaceOrder}
-            className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 shadow-xl shadow-indigo-100 transition-all active:scale-95 flex items-center justify-center gap-2"
+            onClick={() => onPlaceOrder({ timeSlot: selectedTimeSlot, instructions: specialInstructions })}
+            disabled={!selectedTimeSlot}
+            className={`w-full py-3.5 rounded-2xl font-bold text-[14px] flex justify-center items-center transition-all ${selectedTimeSlot
+              ? "bg-orange-400 border-2 border-orange-500 text-white hover:bg-orange-500 active:scale-[0.98] cursor-pointer shadow-sm"
+              : "bg-orange-200/60 text-white/70 cursor-not-allowed border-2 border-transparent"
+              }`}
           >
-            Place Order
-            <ChevronRight size={20} />
+            {selectedTimeSlot ? `Place Order · ₹${total.toFixed(2)}` : "Select a time slot to order"}
           </button>
         </div>
       </div>
