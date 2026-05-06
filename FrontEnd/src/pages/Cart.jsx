@@ -47,21 +47,29 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
           </button>
           <h1 className="text-lg font-bold text-slate-900">Cart</h1>
         </div>
-        <div className="relative">
-          <ShoppingCart size={22} className="text-slate-800" />
-          {totalItemsInCart > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-              {totalItemsInCart}
-            </span>
-          )}
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => onCartUpdate([])}
+            className="text-[12px] font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg active:scale-95 transition-all"
+          >
+            Clear Cart
+          </button>
+          <div className="relative flex items-center">
+            <ShoppingCart size={22} className="text-slate-800" />
+            {totalItemsInCart > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-orange-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {totalItemsInCart}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto w-full pb-8">
+      <div className="max-w-2xl mx-auto w-full pb-8 ">
         {/* Cart Items */}
         <div className="flex flex-col">
           {cart.map((item) => (
-            <div key={item.id} className="flex items-center justify-between p-4 border-b border-slate-100 mx-4">
+            <div key={item.id} className="flex items-center justify-between p-4 border rounded-xl border-slate-900 mx-4 ">
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">{item.name}</h3>
                 <p className="text-orange-500 font-bold text-sm mt-0.5">₹{item.price.toFixed(2)}</p>
@@ -101,30 +109,30 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
         </div>
 
         {/* Time Slot Selection */}
-        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mt-6 mb-4">
+        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mt-6 mb-4 border-slate-900">
           <div className="flex items-center gap-2 mb-4">
             <Clock size={16} className="text-orange-500" />
             <h3 className="font-bold text-slate-900 text-sm">Select Pickup Time Slot</h3>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 ">
             {timeSlots.map((slot) => (
               <button
                 key={slot.id}
                 onClick={() => setSelectedTimeSlot(slot.id)}
                 className={`p-3 rounded-xl border text-left flex flex-col gap-1 transition-all ${selectedTimeSlot === slot.id
-                  ? "border-orange-400 bg-orange-50/20"
-                  : "border-slate-100 hover:border-slate-200"
+                  ? "border-orange-600 bg-orange-50/20"
+                  : "border-slate-900"
                   }`}
               >
-                <span className="text-[13px] font-bold text-slate-800">{slot.time}</span>
-                <span className="text-[11px] text-slate-400">{slot.spots} spots left</span>
+                <span className="text-[13px] font-bold text-slate-900">{slot.time}</span>
+                <span className="text-[11px] text-slate-900">{slot.spots} spots left</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* Special Instructions */}
-        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mb-4">
+        <div className="p-4 border border-slate-900 rounded-2xl mx-4 mb-4 ">
           <h3 className="font-bold text-slate-900 text-[13px] mb-3">Special Instructions</h3>
           <textarea
             value={specialInstructions}
@@ -135,7 +143,7 @@ const Cart = ({ cart, onCartUpdate, onNavigateToMenu, onPlaceOrder }) => {
         </div>
 
         {/* Bill Summary */}
-        <div className="p-4 border border-slate-100 rounded-2xl mx-4 mb-6">
+        <div className="p-4 border border-slate-900 rounded-2xl mx-4 mb-6 ">
           <h3 className="font-bold text-slate-900 text-[13px] mb-4">Bill Summary</h3>
           <div className="space-y-3 mb-4">
             {cart.map(item => (
