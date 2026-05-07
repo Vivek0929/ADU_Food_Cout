@@ -5,10 +5,11 @@ import { Pencil, Trash2, Plus, X } from "lucide-react";
 const CATEGORIES = ["All", "Breakfast", "Lunch", "Snacks", "Beverages", "Desserts"];
 
 const AdminMenu = () => {
-  const { menuItems, toggleMenuItem, deleteMenuItem, addMenuItem } = useCanteen();
+  const { menuItems, toggleMenuItem, deleteMenuItem, addMenuItem, editMenuItem } = useCanteen();
   const [activeCategory, setActiveCategory] = useState("All");
   
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [newItem, setNewItem] = useState({
     name: "",
     description: "",
@@ -32,13 +33,51 @@ const AdminMenu = () => {
     });
   };
 
+  const handleEditClick = (item) => {
+    setNewItem({
+      name: item.name || "",
+      description: item.description || "",
+      price: item.price || "",
+      image: item.image || "",
+      prepTime: item.prepTime || "",
+      category: item.category || "Lunch",
+      isVegetarian: item.isVegetarian === 1 || item.isVegetarian === true,
+      isAvailable: item.isAvailable === 1 || item.isAvailable === true,
+    });
+    setEditingId(item.id);
+    setShowModal(true);
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    try {
+      const response = await fetch(`http://localhost:3000/api/food/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        deleteMenuItem(id);
+      } else {
+        alert("Failed to delete item");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting item");
+    }
+  };
+
   const handleAddItem = async (e) => {
     e.preventDefault();
     if (!newItem.name || !newItem.price) return;
 
     try {
-      const response = await fetch("http://localhost:3000/api/food", {
-        method: "POST",
+      const url = editingId 
+        ? `http://localhost:3000/api/food/${editingId}`
+        : "http://localhost:3000/api/food";
+      
+      const method = editingId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -46,10 +85,17 @@ const AdminMenu = () => {
       });
 
       const data = await response.json();
-      console.log(data);
-      alert("Food Added Successfully");
+      
+      if (editingId) {
+        editMenuItem(editingId, { ...newItem, price: Number(newItem.price) });
+        alert("Food Updated Successfully");
+      } else {
+        addMenuItem({ ...newItem, id: data.id, price: Number(newItem.price) });
+        alert("Food Added Successfully");
+      }
       
       setShowModal(false);
+      setEditingId(null);
       setNewItem({
         name: "",
         description: "",
@@ -60,15 +106,9 @@ const AdminMenu = () => {
         isVegetarian: true,
         isAvailable: true,
       });
-      // Optionally refresh the menu items from context if needed
-      if (addMenuItem) {
-        // This is a mock update to keep the context in sync if it's purely local
-        // but ideally the context should fetch from backend too
-        addMenuItem({ ...newItem, id: data.id });
-      }
     } catch (error) {
       console.log(error);
-      alert("Error adding food item");
+      alert(`Error ${editingId ? 'updating' : 'adding'} food item`);
     }
   };
 
@@ -122,11 +162,14 @@ const AdminMenu = () => {
               >
                 {item.active ? "On" : "Off"}
               </button>
-              <button className="text-slate-400 hover:text-slate-600">
+              <button 
+                onClick={() => handleEditClick(item)}
+                className="text-slate-400 hover:text-slate-600"
+              >
                 <Pencil size={18} />
               </button>
               <button 
-                onClick={() => deleteMenuItem(item.id)}
+                onClick={() => handleDeleteClick(item.id)}
                 className="text-slate-400 hover:text-red-500"
               >
                 <Trash2 size={18} />
@@ -136,14 +179,19 @@ const AdminMenu = () => {
         ))}
       </div>
 
-      {/* Add New Item Modal */}
+      {/* Add/Edit Item Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-5 border-b border-slate-100 sticky top-0 bg-white z-10">
-              <h2 className="text-lg font-black text-slate-900">Add New Item</h2>
+              <h2 className="text-lg font-black text-slate-900">
+                {editingId ? "Edit Item" : "Add New Item"}
+              </h2>
               <button 
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingId(null);
+                }}
                 className="text-slate-400 hover:text-slate-600 p-1"
               >
                 <X size={20} />
@@ -258,7 +306,7 @@ const AdminMenu = () => {
                   type="submit"
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-orange-200 transition-colors active:scale-[0.98]"
                 >
-                  Add Item
+                  {editingId ? "Update Item" : "Add Item"}
                 </button>
               </div>
             </form>

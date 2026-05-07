@@ -91,7 +91,7 @@ const Cart = () => {
             <div key={item.id} className="flex items-center justify-between p-4 border rounded-xl border-slate-900 mx-4 ">
               <div>
                 <h3 className="font-bold text-slate-900 text-sm">{item.name}</h3>
-                <p className="text-orange-500 font-bold text-sm mt-0.5">₹{item.price.toFixed(2)}</p>
+                <p className="text-orange-500 font-bold text-sm mt-0.5">₹{(item.price * item.quantity).toFixed(2)}</p>
               </div>
               <div className="flex items-center gap-3">
                 <button

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 
 const CanteenContext = createContext();
 
@@ -38,6 +38,28 @@ export const CanteenProvider = ({ children }) => {
   const [orders, setOrders] = useState(INITIAL_ORDERS);
   const [cart, setCart] = useState([]);
 
+  useEffect(() => {
+    fetch("http://localhost:3000/api/food")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const formattedData = data
+            .filter(item => item.name) // Filter out invalid items
+            .map(item => ({
+              ...item,
+              price: Number(item.price) || 0, // Ensure price is a number for .toFixed()
+              active: item.isAvailable === 1 || item.isAvailable === true,
+              rating: item.rating || 4.5, // Default rating if missing
+            }));
+          
+          if (formattedData.length > 0) {
+            setMenuItems(formattedData);
+          }
+        }
+      })
+      .catch(err => console.error("Failed to fetch menu items:", err));
+  }, []);
+
   // Admin Actions
   const toggleMenuItem = (id) => {
     setMenuItems(prev => prev.map(item => item.id === id ? { ...item, active: !item.active } : item));
@@ -45,6 +67,10 @@ export const CanteenProvider = ({ children }) => {
   
   const addMenuItem = (item) => {
     setMenuItems(prev => [...prev, { ...item, id: Date.now() }]);
+  };
+
+  const editMenuItem = (id, updatedItem) => {
+    setMenuItems(prev => prev.map(item => item.id === id ? { ...item, ...updatedItem } : item));
   };
 
   const deleteMenuItem = (id) => {
@@ -82,7 +108,7 @@ export const CanteenProvider = ({ children }) => {
 
   return (
     <CanteenContext.Provider value={{
-      menuItems, setMenuItems, toggleMenuItem, addMenuItem, deleteMenuItem,
+      menuItems, setMenuItems, toggleMenuItem, addMenuItem, deleteMenuItem, editMenuItem,
       timeSlots, setTimeSlots, toggleTimeSlot, resetTimeSlot, deleteTimeSlot, addTimeSlot,
       orders, setOrders, updateOrderStatus, placeOrder,
       cart, setCart

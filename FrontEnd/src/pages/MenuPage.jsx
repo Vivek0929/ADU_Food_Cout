@@ -40,15 +40,21 @@ export function MenuPage({ searchQuery, cart, onCartUpdate, onSearchChange }) {
 
     const filteredItems = foods.filter((item) => {
         const matchCategory = activeCategory === "All" || item.category === activeCategory;
+        
+        const itemName = item.name || "";
+        const itemDesc = item.description || "";
+        
         const matchSearch =
             searchQuery === "" ||
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchQuery.toLowerCase());
+            itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            itemDesc.toLowerCase().includes(searchQuery.toLowerCase());
+            
         return matchCategory && matchSearch;
     });
 
     const groupedItems = filteredItems.reduce((acc, item) => {
-        const cat = item.category;
+        if (!item.name) return acc; // Skip invalid items
+        const cat = item.category || "Other";
         if (!acc[cat]) acc[cat] = [];
         acc[cat].push(item);
         return acc;
