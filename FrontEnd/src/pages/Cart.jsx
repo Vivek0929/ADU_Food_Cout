@@ -2,6 +2,7 @@ import { ShoppingCart, ArrowLeft, Trash2, Plus, Minus, Clock } from "lucide-reac
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCanteen } from "../context/CanteenContext";
+import { generateOrderId } from "./Orders";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -20,14 +21,15 @@ const Cart = () => {
     const slotDetails = timeSlots.find(s => s.id === selectedTimeSlot);
     const slotString = slotDetails ? slotDetails.time : "ASAP";
 
+    const rawTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const newOrder = {
-      id: `#${1043 + orders.length}`,
-      customer: "Current User", // Mocked for now
+      id: generateOrderId(),
+      customer: "Current User",
       items: [...cart],
       items_list: cart.map(item => `${item.name} x${item.quantity}`).join(", "),
-      total: cart.reduce((acc, item) => acc + item.price * item.quantity, 0)
-        + Math.round(cart.reduce((acc, item) => acc + item.price * item.quantity, 0) * 0.05),
+      total: rawTotal + Math.round(rawTotal * 0.05),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      createdAt: new Date().toISOString(),
       status: "Pending",
       timeSlotId: selectedTimeSlot,
       timeSlot: slotString,
