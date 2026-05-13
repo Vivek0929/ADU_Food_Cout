@@ -1,72 +1,149 @@
-import { User, Mail, Phone, MapPin, Settings, Shield, Bell, CreditCard, LogOut } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { useCanteen } from '../context/CanteenContext';
+import { Mail, Phone, MapPin, Shield, LogOut, ChevronRight, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 
 const Profile = () => {
-  const profileSections = [
-    { icon: <User className="text-indigo-600" />, title: "Personal Info", desc: "Update your name, photo, and ID" },
-    { icon: <Mail className="text-indigo-600" />, title: "Email & Security", desc: "Manage password and recovery email" },
-    { icon: <Phone className="text-indigo-600" />, title: "Contact Details", desc: "Change phone number and addresses" },
-    { icon: <CreditCard className="text-indigo-600" />, title: "Payments", desc: "Saved cards and digital wallets" },
-    { icon: <Shield className="text-indigo-600" />, title: "Privacy", desc: "Manage data sharing and account visibility" },
-    { icon: <Bell className="text-indigo-600" />, title: "Notifications", desc: "Alerts for orders and promotions" },
-  ];
+  const navigate = useNavigate();
+  const { user, logout, orders } = useCanteen();
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
+  // Get user's orders
+  const userOrders = orders.filter(order => order.customer === user.name || orders.length > 0);
+  const completedOrders = userOrders.filter(order => order.status === 'Completed').length;
+  const totalSpent = userOrders.reduce((sum, order) => sum + order.total, 0);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <div className="flex-1 p-8 bg-[#F8F9FF] overflow-y-auto">
-      <div className="max-w-4xl mx-auto">
-        {/* Profile Header */}
-        <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm mb-8 flex flex-wrap items-center gap-8">
-          <div className="relative group">
-            <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-[#F59E0B] to-[#EF4444] flex items-center justify-center text-white text-4xl font-black shadow-xl shadow-orange-100 group-hover:scale-105 transition-transform duration-300">
-              U
+    <div className="flex-1 p-8 bg-gradient-to-br from-orange-50 to-white overflow-y-auto">
+      <div className="max-w-5xl mx-auto">
+        {/* Profile Header Card */}
+        <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-[2rem] p-8 text-white mb-8 shadow-xl">
+          <div className="flex items-start gap-6">
+            {/* Avatar */}
+            <div className="w-28 h-28 rounded-3xl bg-white bg-opacity-20 flex items-center justify-center text-5xl font-black shadow-xl backdrop-blur-sm">
+              {user.name.charAt(0).toUpperCase()}
             </div>
-            <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-xl shadow-lg border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
-              <Settings size={20} />
-            </button>
-          </div>
-          
-          <div className="flex-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">User Name</h1>
-            <p className="text-slate-500 font-medium flex items-center gap-2 mt-1">
-              <span className="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Student</span>
-              ID: ADU20240901
-            </p>
-            <div className="flex flex-wrap gap-4 mt-6">
-              <div className="flex items-center gap-2 text-slate-400 text-sm font-medium">
-                <Mail size={16} /> user@adu.edu
-              </div>
-              <div className="flex items-center gap-2 text-slate-400 text-sm font-medium">
-                <MapPin size={16} /> Block B, Room 402
+
+            {/* User Info */}
+            <div className="flex-1 pt-2">
+              <h1 className="text-4xl font-black tracking-tight mb-2">{user.name}</h1>
+              <p className="text-white text-opacity-90 font-semibold flex items-center gap-2 mb-3">
+                <Mail size={18} /> {user.email}
+              </p>
+              <div className="flex gap-3 items-center">
+                <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider ${
+                  user.role === 'admin'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-white text-orange-600'
+                }`}>
+                  {user.role === 'admin' ? '🔐 Admin' : '👤 User'}
+                </span>
+                <span className="text-white text-opacity-80 text-sm font-semibold">
+                  ID: {user.studentId}
+                </span>
               </div>
             </div>
           </div>
-
-          <button className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-slate-200">
-            Edit Profile
-          </button>
         </div>
 
-        {/* Settings Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {profileSections.map((section, idx) => (
-            <button key={idx} className="bg-white rounded-3xl border border-slate-100 p-6 flex items-center gap-5 hover:shadow-xl hover:shadow-indigo-100/50 hover:-translate-y-1 transition-all text-left">
-              <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0">
-                {section.icon}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {/* Orders Stat */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 font-semibold text-sm">Orders</span>
+              <Clock className="text-orange-500" size={24} />
+            </div>
+            <p className="text-4xl font-black text-slate-900">{userOrders.length}</p>
+            <p className="text-xs text-slate-400 mt-2 font-medium">Total orders placed</p>
+          </div>
+
+          {/* Completed Stat */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 font-semibold text-sm">Completed</span>
+              <CheckCircle className="text-green-500" size={24} />
+            </div>
+            <p className="text-4xl font-black text-slate-900">{completedOrders}</p>
+            <p className="text-xs text-slate-400 mt-2 font-medium">Successfully delivered</p>
+          </div>
+
+          {/* Spent Stat */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-slate-500 font-semibold text-sm">Spent</span>
+              <TrendingUp className="text-blue-500" size={24} />
+            </div>
+            <p className="text-4xl font-black text-slate-900">₹{totalSpent}</p>
+            <p className="text-xs text-slate-400 mt-2 font-medium">Total amount spent</p>
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {/* Order History */}
+          <button
+            onClick={() => navigate('/orders')}
+            className="bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-lg hover:shadow-orange-100/50 hover:-translate-y-1 transition-all text-left group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center group-hover:bg-orange-100 transition-colors">
+                  <Clock className="text-orange-600" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Order History</h3>
+                  <p className="text-xs text-slate-500 mt-1">View all your orders</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-slate-900">{section.title}</h3>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">{section.desc}</p>
+              <ChevronRight className="text-slate-300 group-hover:text-orange-500 transition-colors" size={24} />
+            </div>
+          </button>
+
+          {/* Admin Dashboard - Only for Admins */}
+          {user.role === 'admin' && (
+            <button
+              onClick={() => navigate('/admin')}
+              className="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 border border-red-200 hover:shadow-lg hover:shadow-red-100/50 hover:-translate-y-1 transition-all text-left group relative overflow-hidden"
+            >
+              {/* Admin Indicator */}
+              <div className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-black">
+                ⚙️
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-red-200 rounded-xl flex items-center justify-center group-hover:bg-red-300 transition-colors">
+                    <Shield className="text-red-600" size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900">Admin Dashboard</h3>
+                    <p className="text-xs text-slate-500 mt-1">Manage canteen operations</p>
+                  </div>
+                </div>
+                <ChevronRight className="text-slate-300 group-hover:text-red-500 transition-colors" size={24} />
               </div>
             </button>
-          ))}
+          )}
         </div>
 
-        {/* Danger Zone */}
-        <div className="mt-8">
-          <button className="w-full bg-red-50 text-red-600 rounded-3xl p-5 font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2 group">
-            <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-            Sign Out of Account
-          </button>
-        </div>
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="w-full bg-gradient-to-r from-red-50 to-red-100 text-red-600 rounded-2xl p-4 font-bold hover:from-red-100 hover:to-red-200 transition-all flex items-center justify-center gap-2 border border-red-200 group shadow-sm hover:shadow-md"
+        >
+          <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
+          Logout
+        </button>
       </div>
     </div>
   );

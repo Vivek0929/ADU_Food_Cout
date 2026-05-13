@@ -1,9 +1,20 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Clock, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, UtensilsCrossed, Clock, LogOut, ArrowLeft } from "lucide-react";
+import { useCanteen } from "../../context/CanteenContext";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useCanteen();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  const handleBack = () => {
+    navigate("/", { replace: true });
+  };
 
   const navigation = [
     { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
@@ -58,7 +69,7 @@ const AdminLayout = () => {
 
           <div className="p-4 border-t border-slate-100">
             <button
-              onClick={() => navigate("/")}
+              onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
             >
               <LogOut size={18} />
@@ -70,13 +81,21 @@ const AdminLayout = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
           <header className="h-[72px] bg-white border-b border-slate-100 flex items-center justify-between px-10 z-10 shrink-0">
-             <div className="flex items-center gap-3">
+             <div className="flex items-center gap-4">
+               <button
+                 onClick={handleBack}
+                 className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors font-semibold hover:bg-slate-50 px-3 py-2 rounded-lg"
+               >
+                 <ArrowLeft size={20} />
+                 <span className="hidden sm:inline">Back</span>
+               </button>
                <h1 className="text-xl font-bold text-slate-900">Admin Panel</h1>
              </div>
              <button
-               onClick={() => navigate("/")}
-               className="text-slate-500 hover:text-slate-800 font-medium text-sm"
+               onClick={handleLogout}
+               className="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-2"
              >
+               <LogOut size={18} />
                Logout
              </button>
           </header>
@@ -92,6 +111,13 @@ const AdminLayout = () => {
       <div className="flex lg:hidden flex-col h-screen bg-[#F9F9FB] overflow-hidden">
         {/* Mobile top-bar */}
         <header className="flex items-center justify-between px-5 py-4 bg-white border-b border-slate-100 shrink-0">
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors font-semibold hover:bg-slate-50 px-2 py-1.5 rounded-lg"
+          >
+            <ArrowLeft size={20} />
+          </button>
+
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#F97316] rounded-xl flex items-center justify-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
@@ -99,14 +125,14 @@ const AdminLayout = () => {
                 <line x1="6" y1="17" x2="18" y2="17"></line>
               </svg>
             </div>
-            <h1 className="font-bold text-[18px] text-slate-900 leading-tight">Admin Panel</h1>
+            <h1 className="font-bold text-[18px] text-slate-900 leading-tight">Admin</h1>
           </div>
 
           <button
-            onClick={() => navigate("/")}
-            className="text-slate-500 font-medium text-sm"
+            onClick={handleLogout}
+            className="text-slate-500 hover:text-red-600 font-medium text-sm flex items-center gap-1"
           >
-            Logout
+            <LogOut size={16} />
           </button>
         </header>
 

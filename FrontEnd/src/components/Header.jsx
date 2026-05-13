@@ -1,8 +1,18 @@
 import { useState } from "react";
-import { Bell, ChevronDown } from "lucide-react";
+import { Bell, ChevronDown, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useCanteen } from "../context/CanteenContext";
 
 export function Header() {
   const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const navigate = useNavigate();
+  const { user, logout } = useCanteen();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <header className="h-16 bg-white border-b border-[#E5E7F0] flex items-center px-6 gap-4 sticky top-0 z-40">
@@ -39,17 +49,55 @@ export function Header() {
           )}
         </div>
 
-        {/* User Profile */}
-        <button className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-[#F3F4F8] transition-colors">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#EF4444] flex items-center justify-center text-white text-sm font-bold">
-            U
-          </div>
-          <div className="hidden sm:block text-left">
-            <p className="text-sm font-semibold text-[#1E1B4B] leading-tight">User</p>
-            <p className="text-xs text-[#9CA3AF]">ID: ADU2024</p>
-          </div>
-          <ChevronDown className="w-3 h-3 text-[#9CA3AF] hidden sm:block" />
-        </button>
+        {/* User Profile Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-[#F3F4F8] transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#EF4444] flex items-center justify-center text-white text-sm font-bold">
+              {user?.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-sm font-semibold text-[#1E1B4B] leading-tight">{user?.name}</p>
+              <p className="text-xs text-[#9CA3AF]">{user?.role === 'admin' ? '🔐 Admin' : '👤 User'}</p>
+            </div>
+            <ChevronDown className={`w-3 h-3 text-[#9CA3AF] hidden sm:block transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-[#E5E7F0] p-2 z-50">
+              <button
+                onClick={() => {
+                  navigate("/profile");
+                  setProfileOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 text-sm font-semibold text-[#1E1B4B] hover:bg-[#F3F4F8] rounded-lg transition-colors"
+              >
+                👤 My Profile
+              </button>
+              {user?.role === 'admin' && (
+                <button
+                  onClick={() => {
+                    navigate("/admin");
+                    setProfileOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm font-semibold text-[#1E1B4B] hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2 group"
+                >
+                  <span className="text-base">🛡️</span> Admin Panel
+                  <span className="ml-auto text-red-500 font-black">⚙️</span>
+                </button>
+              )}
+              <div className="border-t border-[#E5E7F0] my-2" />
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <LogOut size={16} /> Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
