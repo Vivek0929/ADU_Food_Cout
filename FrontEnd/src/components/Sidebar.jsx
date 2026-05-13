@@ -1,22 +1,30 @@
-import { Home, UtensilsCrossed, ShoppingCart, ClipboardList, User } from "lucide-react";
+import { Home, UtensilsCrossed, ShoppingCart, ClipboardList, User, Shield } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCanteen } from "../context/CanteenContext";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { cart } = useCanteen();
+  const { cart, user } = useCanteen();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const activePath = location.pathname;
 
-  const menuItems = [
+  const userMenuItems = [
     { icon: <Home size={18} />, label: "Home", path: "/" },
     { icon: <UtensilsCrossed size={18} />, label: "Menu", path: "/menu" },
     { icon: <ShoppingCart size={18} />, label: "Cart", path: "/cart", hasBadge: true },
     { icon: <ClipboardList size={18} />, label: "Orders", path: "/orders" },
     { icon: <User size={18} />, label: "Profile", path: "/profile" },
   ];
+
+  // Add admin menu item only for admins
+  const adminMenuItems = user?.role === 'admin' 
+    ? [
+        ...userMenuItems,
+        { icon: <Shield size={18} />, label: "Admin Panel", path: "/admin" },
+      ]
+    : userMenuItems;
 
   return (
     <aside className="w-56 bg-[#111827] text-white flex flex-col h-screen sticky top-0 shrink-0 border-r border-white/5">
@@ -33,8 +41,10 @@ const Sidebar = () => {
 
       {/* Navigation (Compact) */}
       <nav className="flex-1 px-3 py-4 space-y-1.5">
-        {menuItems.map((item) => {
-          const isActive = activePath === item.path;
+        {adminMenuItems.map((item) => {
+          const isActive = activePath === item.path || (item.path === "/admin" && activePath.startsWith("/admin"));
+          const isAdminLink = item.path === "/admin";
+          
           return (
             <button
               key={item.path}
@@ -54,6 +64,13 @@ const Sidebar = () => {
               </div>
               <span className="font-bold text-xs tracking-wide">{item.label}</span>
 
+              {/* Admin Badge */}
+              {isAdminLink && user?.role === 'admin' && (
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-black">
+                  ⚙️
+                </span>
+              )}
+
               {item.hasBadge && cartCount > 0 && (
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 bg-white text-orange-600 text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
                   {cartCount}
@@ -71,11 +88,13 @@ const Sidebar = () => {
           className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group text-left"
         >
           <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center font-black text-sm">
-            U
+            {user?.name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1">
-            <p className="text-xs font-bold text-white">User</p>
-            <p className="text-slate-500 text-[8px] font-black uppercase tracking-tight">Student</p>
+            <p className="text-xs font-bold text-white truncate">{user?.name}</p>
+            <p className="text-slate-500 text-[8px] font-black uppercase tracking-tight">
+              {user?.role === 'admin' ? '🔐 Admin' : '👤 User'}
+            </p>
           </div>
         </button>
       </div>

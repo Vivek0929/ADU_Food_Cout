@@ -37,6 +37,18 @@ export const CanteenProvider = ({ children }) => {
   const [timeSlots, setTimeSlots] = useState(INITIAL_TIME_SLOTS);
   const [orders, setOrders] = useState(INITIAL_ORDERS);
   const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('canteenUser');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      setIsAuthenticated(true);
+    }
+  }, []);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/food")
@@ -106,12 +118,58 @@ export const CanteenProvider = ({ children }) => {
     }
   };
 
+  // Authentication Functions
+  const login = (email, password) => {
+    // Simple authentication - in real app, verify with backend
+    const userData = {
+      id: 'user_' + Date.now(),
+      email,
+      name: email.split('@')[0],
+      role: email.includes('admin') ? 'admin' : 'user',
+      joinDate: new Date().toLocaleDateString(),
+      studentId: 'ADU' + Math.random().toString(9).slice(2, 8),
+      ordersCount: 0,
+      completedCount: 0,
+      totalSpent: 0
+    };
+    setUser(userData);
+    setIsAuthenticated(true);
+    localStorage.setItem('canteenUser', JSON.stringify(userData));
+    return userData;
+  };
+
+  const signup = (email, password, name) => {
+    // Simple signup - in real app, save to backend
+    const userData = {
+      id: 'user_' + Date.now(),
+      email,
+      name,
+      role: 'user',
+      joinDate: new Date().toLocaleDateString(),
+      studentId: 'ADU' + Math.random().toString(9).slice(2, 8),
+      ordersCount: 0,
+      completedCount: 0,
+      totalSpent: 0
+    };
+    setUser(userData);
+    setIsAuthenticated(true);
+    localStorage.setItem('canteenUser', JSON.stringify(userData));
+    return userData;
+  };
+
+  const logout = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('canteenUser');
+  };
+
   return (
     <CanteenContext.Provider value={{
       menuItems, setMenuItems, toggleMenuItem, addMenuItem, deleteMenuItem, editMenuItem,
       timeSlots, setTimeSlots, toggleTimeSlot, resetTimeSlot, deleteTimeSlot, addTimeSlot,
       orders, setOrders, updateOrderStatus, placeOrder,
-      cart, setCart
+      cart, setCart,
+      user, isAuthenticated, login, signup, logout
     }}>
       {children}
     </CanteenContext.Provider>
