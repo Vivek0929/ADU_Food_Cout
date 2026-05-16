@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Star, Clock, Plus, Minus, Search } from "lucide-react";
+import FoodAnimations from './FoodAnimations';
 import { useCanteen } from "../context/CanteenContext";
 
 // ─── Menu Data ────────────────────────────────────────────────────────────────
@@ -16,7 +17,7 @@ const BADGE_STYLE = {
 };
 
 export default function LandingPage({ showHero = true }) {
-  const { menuItems, cart, setCart } = useCanteen();
+  const { menuItems, cart, setCart, user } = useCanteen();
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -59,25 +60,31 @@ export default function LandingPage({ showHero = true }) {
       {/* ── Hero Banner ─────────────────────────────────────────────────────── */}
       {showHero && (
         <div
-          className="relative mx-5 mt-5 rounded-3xl overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)" }}
+          className="relative mx-5 mt-5 rounded-[32px] overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:shadow-orange-200 hover:-translate-y-1"
+          style={{ 
+            background: "linear-gradient(135deg, #F97316 0%, #EA580C 100%)",
+            minHeight: '160px'
+          }}
         >
         {/* Content */}
-        <div className="relative z-10 px-8 py-7">
-          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, fontWeight: 500, margin: 0 }}>
+        <div className="relative z-10 px-10 py-10 transition-all duration-500 group-hover:py-12">
+          <p className="text-white/80 text-sm font-semibold mb-1 transform transition-all duration-500 group-hover:translate-x-1">
             {greeting},
           </p>
-          <h1 style={{ color: "#fff", fontSize: 26, fontWeight: 900, margin: "4px 0 4px", display: "flex", alignItems: "center", gap: 8 }}>
-            User <span>👋</span>
+          <h1 className="text-white text-3xl font-black flex items-center gap-3 mb-2 transform transition-all duration-500 group-hover:scale-105 group-hover:translate-x-1">
+            {user?.name || 'User'} <span className="animate-bounce">👋</span>
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, fontWeight: 500, margin: 0 }}>
+          <p className="text-white/90 text-base font-medium max-w-[200px] leading-tight transform transition-all duration-500 group-hover:translate-x-1">
             Order ahead, skip the queue!
           </p>
         </div>
 
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", right: "-6%", top: "-40%", width: 200, height: 200, background: "rgba(255,255,255,0.1)", borderRadius: "50%", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", right: "10%", bottom: "-55%", width: 170, height: 170, background: "rgba(255,255,255,0.1)", borderRadius: "50%", pointerEvents: "none" }} />
+        {/* Shimmer and Glow effect */}
+        <FoodAnimations />
+        
+        {/* Decorative circles with parallax-like movement on hover */}
+        <div className="absolute right-[-6%] top-[-40%] width-[240px] height-[240px] bg-white/10 rounded-full pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:-translate-y-4" style={{ width: 240, height: 240 }} />
+        <div className="absolute right-[10%] bottom-[-55%] width-[200px] height-[200px] bg-white/10 rounded-full pointer-events-none transition-transform duration-700 group-hover:scale-110 group-hover:translate-y-4" style={{ width: 200, height: 200 }} />
       </div>
       )}
 

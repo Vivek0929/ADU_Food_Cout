@@ -1,12 +1,12 @@
 import { useCanteen } from "../../context/CanteenContext";
-import { ShoppingBag, TrendingUp, Clock, BarChart } from "lucide-react";
+import { ShoppingBag, TrendingUp, Clock } from "lucide-react";
 
 const AdminDashboard = () => {
   const { orders } = useCanteen();
 
   const totalOrders = orders.length;
-  const activeOrders = orders.filter(o => o.status === "Pending" || o.status === "Preparing").length;
-  const todaysRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0); // simplistic sum for demo
+  const activeOrders = orders.filter(order => order.status === "Pending" || order.status === "Preparing").length;
+  const todaysRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0); // simplistic sum for demo
   const todaysOrders = orders.length; // assuming all are today for demo
 
   // Get current date string formatted like "Wednesday, 06 May 2026"

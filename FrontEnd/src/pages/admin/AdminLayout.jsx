@@ -142,7 +142,7 @@ const AdminLayout = () => {
         </main>
 
         {/* Mobile bottom navigation bar */}
-        <nav className="sticky bottom-0 z-50 w-full bg-white border-t border-slate-100 px-2 pb-2 pt-2 grid grid-cols-4 gap-1">
+        <nav className="sticky bottom-0 z-50 w-full bg-white border-t border-slate-100 px-2 pb-2 pt-2 grid grid-cols-5 gap-1">
           {navigation.map(({ path, name, icon: Icon }) => {
             const isActive = currentPath === path;
             return (

@@ -19,10 +19,9 @@ function App() {
     <CanteenProvider>
       <BrowserRouter>
         <Routes>
-          {/* Login Route */}
+
           <Route path="/login" element={<Login />} />
 
-          {/* Protected User Routes */}
           <Route
             path="/"
             element={
@@ -38,7 +37,6 @@ function App() {
             <Route path="profile" element={<Profile />} />
           </Route>
 
-          {/* Protected Admin Routes */}
           <Route
             path="/admin"
             element={
@@ -53,7 +51,6 @@ function App() {
             <Route path="slots" element={<AdminSlots />} />
           </Route>
 
-          {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

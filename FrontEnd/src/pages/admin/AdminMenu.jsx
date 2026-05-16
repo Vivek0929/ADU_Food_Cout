@@ -51,7 +51,8 @@ const AdminMenu = () => {
   const handleDeleteClick = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      const response = await fetch(`http://localhost:3000/api/food/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${baseUrl}/api/food/${id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -70,9 +71,10 @@ const AdminMenu = () => {
     if (!newItem.name || !newItem.price) return;
 
     try {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       const url = editingId 
-        ? `http://localhost:3000/api/food/${editingId}`
-        : "http://localhost:3000/api/food";
+        ? `${baseUrl}/api/food/${editingId}`
+        : `${baseUrl}/api/food`;
       
       const method = editingId ? "PUT" : "POST";
 

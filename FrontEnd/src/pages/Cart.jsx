@@ -2,11 +2,11 @@ import { ShoppingCart, ArrowLeft, Trash2, Plus, Minus, Clock } from "lucide-reac
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCanteen } from "../context/CanteenContext";
-import { generateOrderId } from "./Orders";
+import { generateOrderId } from "../utils/orderUtils";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { timeSlots, cart, setCart, orders, placeOrder } = useCanteen();
+  const { timeSlots, cart, setCart, placeOrder } = useCanteen();
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [specialInstructions, setSpecialInstructions] = useState("");
 

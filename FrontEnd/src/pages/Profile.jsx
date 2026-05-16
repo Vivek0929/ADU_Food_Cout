@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useCanteen } from '../context/CanteenContext';
-import { Mail, Phone, MapPin, Shield, LogOut, ChevronRight, Clock, CheckCircle, TrendingUp } from 'lucide-react';
+import { Mail, Shield, LogOut, ChevronRight, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -40,12 +40,11 @@ const Profile = () => {
                 <Mail size={18} /> {user.email}
               </p>
               <div className="flex gap-3 items-center">
-                <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider ${
-                  user.role === 'admin'
+                <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider ${user.role === 'admin'
                     ? 'bg-red-500 text-white'
                     : 'bg-white text-orange-600'
-                }`}>
-                  {user.role === 'admin' ? '🔐 Admin' : '👤 User'}
+                  }`}>
+                  {user.role === 'admin' ? 'Admin' : 'User'}
                 </span>
                 <span className="text-white text-opacity-80 text-sm font-semibold">
                   ID: {user.studentId}
