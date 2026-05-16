@@ -2,6 +2,9 @@ import { createContext, useState, useContext, useEffect } from 'react';
 
 const CanteenContext = createContext();
 
+// API base
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const INITIAL_MENU_ITEMS = [
   { id: 1, name: "Masala Dosa", description: "Crispy dosa with spiced potato filling", price: 45, rating: 4.5, prepTime: 8, category: "Breakfast", badge: "Bestseller", image: "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop", active: true },
   { id: 2, name: "Idli Sambar", description: "Soft idlis with tangy sambar & chutney", price: 35, rating: 4.3, prepTime: 5, category: "Breakfast", badge: null, image: "https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?w=400&h=300&fit=crop", active: true },
@@ -40,18 +43,33 @@ export const CanteenProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Load user from localStorage on mount
+  // Initialize auth state from backend (httpOnly cookie)
   useEffect(() => {
-    const storedUser = localStorage.getItem('canteenUser');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      setIsAuthenticated(true);
-    }
+    let mounted = true;
+    fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        if (!mounted) return;
+        if (data && data.user) {
+          setUser(data.user);
+          setIsAuthenticated(true);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+      })
+      .catch(err => {
+        console.error('Auth init failed', err);
+        setUser(null);
+        setIsAuthenticated(false);
+      });
+    return () => { mounted = false; };
   }, []);
 
+
+
   useEffect(() => {
-    fetch("http://localhost:3000/api/food")
+    fetch(`${API_URL}/api/food`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -63,7 +81,7 @@ export const CanteenProvider = ({ children }) => {
               active: item.isAvailable === 1 || item.isAvailable === true,
               rating: item.rating || 4.5, // Default rating if missing
             }));
-          
+
           if (formattedData.length > 0) {
             setMenuItems(formattedData);
           }
@@ -76,7 +94,7 @@ export const CanteenProvider = ({ children }) => {
   const toggleMenuItem = (id) => {
     setMenuItems(prev => prev.map(item => item.id === id ? { ...item, active: !item.active } : item));
   };
-  
+
   const addMenuItem = (item) => {
     setMenuItems(prev => [...prev, { ...item, id: Date.now() }]);
   };
@@ -119,48 +137,52 @@ export const CanteenProvider = ({ children }) => {
   };
 
   // Authentication Functions
-  const login = (email, password) => {
-    // Simple authentication - in real app, verify with backend
-    const userData = {
-      id: 'user_' + Date.now(),
-      email,
-      name: email.split('@')[0],
-      role: email.includes('admin') ? 'admin' : 'user',
-      joinDate: new Date().toLocaleDateString(),
-      studentId: 'ADU' + Math.random().toString(9).slice(2, 8),
-      ordersCount: 0,
-      completedCount: 0,
-      totalSpent: 0
-    };
-    setUser(userData);
-    setIsAuthenticated(true);
-    localStorage.setItem('canteenUser', JSON.stringify(userData));
-    return userData;
+  const login = async (email, password) => {
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Login failed');
+      setUser(data.user);
+      setIsAuthenticated(true);
+      return data.user;
+    } catch (err) {
+      console.error('login error', err);
+      throw err;
+    }
   };
 
-  const signup = (email, password, name) => {
-    // Simple signup - in real app, save to backend
-    const userData = {
-      id: 'user_' + Date.now(),
-      email,
-      name,
-      role: 'user',
-      joinDate: new Date().toLocaleDateString(),
-      studentId: 'ADU' + Math.random().toString(9).slice(2, 8),
-      ordersCount: 0,
-      completedCount: 0,
-      totalSpent: 0
-    };
-    setUser(userData);
-    setIsAuthenticated(true);
-    localStorage.setItem('canteenUser', JSON.stringify(userData));
-    return userData;
+  const signup = async (email, password, name) => {
+    try {
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password, name })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Signup failed');
+      setUser(data.user);
+      setIsAuthenticated(true);
+      return data.user;
+    } catch (err) {
+      console.error('signup error', err);
+      throw err;
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    } catch (e) {
+      console.warn('logout request failed', e);
+    }
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('canteenUser');
   };
 
   return (
@@ -176,4 +198,5 @@ export const CanteenProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCanteen = () => useContext(CanteenContext);

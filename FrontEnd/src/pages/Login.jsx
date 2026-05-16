@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCanteen } from '../context/CanteenContext';
-import { Mail, Lock, User, Eye, EyeOff, LogIn, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, LogIn } from 'lucide-react';
 
 const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -64,19 +64,20 @@ const Login = () => {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      // Call backend auth
+      let userData;
       if (isSignUp) {
-        signup(formData.email, formData.password, formData.name);
+        userData = await signup(formData.email, formData.password, formData.name);
         setFormData({ email: '', password: '', name: '', confirmPassword: '' });
       } else {
-        login(formData.email, formData.password);
+        userData = await login(formData.email, formData.password);
       }
 
-      navigate('/');
+      if (userData && userData.role === 'admin') navigate('/admin');
+      else navigate('/');
     } catch (err) {
-      setError('Authentication failed. Please try again.');
+      console.error('Login error:', err);
+      setError(err?.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -101,29 +102,20 @@ const Login = () => {
       };
       
       // Create account with Google user info
-      signup(googleUser.email, googleUser.password, googleUser.name);
-      navigate('/');
+      const userData = await signup(googleUser.email, googleUser.password, googleUser.name);
+      if (userData && userData.role === 'admin') navigate('/admin');
+      else navigate('/');
     } catch (err) {
+      console.error('Google Sign-in error:', err);
       setError('Google Sign-in failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBack = () => {
-    navigate('/', { replace: true });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-orange-50 flex items-center justify-center p-4 relative">
-      {/* Back Button */}
-      <button
-        onClick={handleBack}
-        className="absolute top-6 left-6 flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors font-semibold"
-      >
-        <ArrowLeft size={20} />
-        <span className="hidden sm:inline">Back</span>
-      </button>
+      {/* removed back button per request */}
 
       <div className="w-full max-w-md">
         {/* Header */}

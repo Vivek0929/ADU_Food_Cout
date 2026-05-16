@@ -11,13 +11,7 @@ import {
   QrCode,
 } from "lucide-react";
 import { useCanteen } from "../context/CanteenContext";
-
-// ─── Unique Order ID generator ────────────────────────────────────────────────
-export const generateOrderId = () => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  const rand = (n) => Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  return `#CB${rand(5)}`;
-};
+import { generateOrderId } from "../utils/orderUtils";
 
 // ─── Status config ─────────────────────────────────────────────────────────────
 const STATUS_STEPS = [
