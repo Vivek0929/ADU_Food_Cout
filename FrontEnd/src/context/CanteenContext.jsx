@@ -31,10 +31,27 @@ export const CanteenProvider = ({ children }) => {
   const [menuItems, setMenuItems] = useState(INITIAL_MENU_ITEMS);
   const [timeSlots, setTimeSlots] = useState(INITIAL_TIME_SLOTS);
   const [orders, setOrders] = useState(INITIAL_ORDERS);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem('adu_canteen_cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (e) {
+      console.warn('Failed to load cart from localStorage', e);
+      return [];
+    }
+  });
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+
+  // Sync cart changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('adu_canteen_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.warn('Failed to save cart to localStorage', e);
+    }
+  }, [cart]);
 
   // Initialize auth state from backend (httpOnly cookie)
   useEffect(() => {

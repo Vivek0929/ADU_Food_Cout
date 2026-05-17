@@ -12,9 +12,8 @@ const Home = () => {
   const totalItemsInCart = cart.reduce((acc, item) => acc + item.quantity, 0);
   const activePath = location.pathname;
 
-  // ── Mobile bottom-nav items ──────────────────────────────────────────────
   const mobileNav = [
-    { id: "home", path: "/", icon: HomeIcon, label: "Home" },
+    { id: "home", path: "/dashboard", icon: HomeIcon, label: "Home" },
     { id: "menu", path: "/menu", icon: UtensilsCrossed, label: "Menu" },
     { id: "cart", path: "/cart", icon: ShoppingCart, label: "Cart" },
     { id: "orders", path: "/orders", icon: ClipboardList, label: "Orders" },
@@ -26,7 +25,7 @@ const Home = () => {
       {/* ════════════════════════════════════════════════════════
           DESKTOP layout — Sidebar + Header (lg: 1024px and up)
           ════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:flex h-screen bg-[#FDFCFB] overflow-hidden">
+      <div className="hidden lg:flex h-screen bg-[#0B0E1A] overflow-hidden">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
@@ -39,16 +38,16 @@ const Home = () => {
       {/* ════════════════════════════════════════════════════════
           MOBILE / TABLET layout — Bottom nav (below lg)
           ════════════════════════════════════════════════════════ */}
-      <div className="lg:hidden bg-[#F9F9FB] min-h-screen pt-[60px] pb-[60px]">
+      <div className="lg:hidden bg-[#0B0E1A] min-h-screen pt-[60px] pb-[60px]">
         {/* Mobile top-bar */}
-        <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100 shadow-sm">
+        <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-[#111827] border-b border-slate-800 shadow-sm">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center shadow shadow-orange-200">
               <UtensilsCrossed size={16} className="text-white" />
             </div>
             <div>
-              <p className="font-black text-sm text-slate-900 leading-tight">ADU Food</p>
-              <p className="text-[8px] font-black text-orange-500 uppercase tracking-widest">Court</p>
+              <p className="font-black text-sm text-white leading-tight">ADU Food</p>
+              <p className="text-[8px] font-black text-orange-400 uppercase tracking-widest">Court</p>
             </div>
           </div>
 
@@ -79,7 +78,7 @@ const Home = () => {
         </main>
 
         {/* Mobile bottom navigation bar */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 px-2 pb-2 pt-1 grid grid-cols-5 gap-1 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#111827] border-t border-slate-800 px-2 pb-2 pt-1 grid grid-cols-5 gap-1 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
           {mobileNav.map(({ id, path, icon: Icon, label }) => {
             const isActive = activePath === path;
             return (

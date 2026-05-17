@@ -1,8 +1,10 @@
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import jwt from 'jsonwebtoken';
 import pool, { dbState } from '../config/db.js';
 
 const ORDERS_FILE = fileURLToPath(new URL('../orders_store.json', import.meta.url));
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me';
 
 // Helper: Ensure the orders_store.json fallback file exists
 export const ensureOrdersFile = async () => {
@@ -29,8 +31,27 @@ const writeOrdersToFile = async (orders) => {
 // GET /api/orders
 export const getAllOrders = async (req, res) => {
   try {
+    const token = req.cookies?.token;
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    const isAdmin = decoded.role === 'admin';
+    const userEmail = decoded.email;
+
     if (dbState.dbAvailable) {
-      const [rows] = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+      let rows;
+      if (isAdmin) {
+        [rows] = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+      } else {
+        [rows] = await pool.query('SELECT * FROM orders WHERE email = ? ORDER BY created_at DESC', [userEmail]);
+      }
+      
       // Parse the items back from JSON string if needed, although frontend expects string for items_list
       // We will parse items_json if it exists so the frontend gets the full object back
       const parsedRows = rows.map(row => ({
@@ -40,9 +61,15 @@ export const getAllOrders = async (req, res) => {
       return res.json(parsedRows);
     } else {
       const orders = await readOrdersFromFile();
+      let filteredOrders = orders;
+      
+      if (!isAdmin) {
+        filteredOrders = orders.filter(o => o.email === userEmail || o.customer === decoded.name);
+      }
+      
       // Sort newest first
-      orders.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
-      return res.json(orders);
+      filteredOrders.sort((a, b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
+      return res.json(filteredOrders);
     }
   } catch (err) {
     console.error(err);
@@ -53,11 +80,24 @@ export const getAllOrders = async (req, res) => {
 // POST /api/orders
 export const createOrder = async (req, res) => {
   try {
+    const token = req.cookies?.token;
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
     const newOrder = req.body;
     // ensure required fields
     if (!newOrder.id || !newOrder.customer) {
       return res.status(400).json({ error: 'Missing required order fields' });
     }
+
+    // Automatically inject the user's email from the verified token
+    newOrder.email = decoded.email;
 
     if (dbState.dbAvailable) {
       const itemsJson = JSON.stringify(newOrder.items || []);
@@ -65,11 +105,12 @@ export const createOrder = async (req, res) => {
       const status = newOrder.status || 'Pending';
 
       await pool.query(
-        `INSERT INTO orders (id, customer, items_json, items_list, total, time, created_at, status, timeSlotId, timeSlot, instructions)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO orders (id, customer, email, items_json, items_list, total, time, created_at, status, timeSlotId, timeSlot, instructions)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           newOrder.id,
           newOrder.customer,
+          newOrder.email,
           itemsJson,
           newOrder.items_list || '',
           newOrder.total || 0,

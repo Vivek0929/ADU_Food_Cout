@@ -1,0 +1,180 @@
+[
+  {
+    "id": "#CBAZGJ3",
+    "customer": "Google User",
+    "items": [
+      {
+        "id": 1,
+        "name": "Masala Dosa",
+        "description": "Crispy dosa with spiced potato filling",
+        "price": 45,
+        "rating": 4.5,
+        "prepTime": 8,
+        "category": "Breakfast",
+        "badge": "Bestseller",
+        "image": "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 5
+      }
+    ],
+    "items_list": "Masala Dosa x5",
+    "total": 236,
+    "time": "23:22",
+    "createdAt": "2026-05-17T17:52:46.944Z",
+    "status": "Pending",
+    "timeSlotId": 1,
+    "timeSlot": "8:00 AM - 8:30 AM",
+    "instructions": ""
+  },
+  {
+    "id": "#CBV36G6",
+    "customer": "Google User",
+    "email": "user@gmail.com",
+    "items": [
+      {
+        "id": 1,
+        "name": "Masala Dosa",
+        "description": "Crispy dosa with spiced potato filling",
+        "price": 45,
+        "rating": 4.5,
+        "prepTime": 8,
+        "category": "Breakfast",
+        "badge": "Bestseller",
+        "image": "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 1
+      },
+      {
+        "id": 2,
+        "name": "Idli Sambar",
+        "description": "Soft idlis with tangy sambar & chutney",
+        "price": 35,
+        "rating": 4.3,
+        "prepTime": 5,
+        "category": "Breakfast",
+        "badge": null,
+        "image": "https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 1
+      },
+      {
+        "id": 5,
+        "name": "Paneer Butter Masala",
+        "description": "Creamy tomato curry with soft paneer",
+        "price": 90,
+        "rating": 4.7,
+        "prepTime": 12,
+        "category": "Lunch",
+        "badge": "Chef's Pick",
+        "image": "https://images.unsplash.com/photo-1708793873401-e8c6c153b76a?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 1
+      }
+    ],
+    "items_list": "Masala Dosa x1, Idli Sambar x1, Paneer Butter Masala x1",
+    "total": 179,
+    "time": "23:39",
+    "createdAt": "2026-05-17T18:09:19.193Z",
+    "status": "Pending",
+    "timeSlotId": 1,
+    "timeSlot": "8:00 AM - 8:30 AM",
+    "instructions": ""
+  },
+  {
+    "id": "#CBNHYD6",
+    "customer": "lokesh",
+    "email": "lokesh@sample.com",
+    "items": [
+      {
+        "id": 2,
+        "name": "Idli Sambar",
+        "description": "Soft idlis with tangy sambar & chutney",
+        "price": 35,
+        "rating": 4.3,
+        "prepTime": 5,
+        "category": "Breakfast",
+        "badge": null,
+        "image": "https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 4
+      }
+    ],
+    "items_list": "Idli Sambar x4",
+    "total": 147,
+    "time": "23:41",
+    "createdAt": "2026-05-17T18:11:30.663Z",
+    "status": "Pending",
+    "timeSlotId": 7,
+    "timeSlot": "4:00 PM - 4:30 PM",
+    "instructions": ""
+  },
+  {
+    "id": "#CBGQNCL",
+    "customer": "Google User",
+    "email": "user@gmail.com",
+    "items": [
+      {
+        "id": 1,
+        "name": "Masala Dosa",
+        "description": "Crispy dosa with spiced potato filling",
+        "price": 45,
+        "rating": 4.5,
+        "prepTime": 8,
+        "category": "Breakfast",
+        "badge": "Bestseller",
+        "image": "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 5
+      },
+      {
+        "id": 2,
+        "name": "Idli Sambar",
+        "description": "Soft idlis with tangy sambar & chutney",
+        "price": 35,
+        "rating": 4.3,
+        "prepTime": 5,
+        "category": "Breakfast",
+        "badge": null,
+        "image": "https://images.unsplash.com/photo-1668236499396-a62d2d1cb0cf?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 4
+      }
+    ],
+    "items_list": "Masala Dosa x5, Idli Sambar x4",
+    "total": 383,
+    "time": "01:42",
+    "createdAt": "2026-05-17T20:12:41.267Z",
+    "status": "Pending",
+    "timeSlotId": 2,
+    "timeSlot": "8:30 AM - 9:00 AM",
+    "instructions": ""
+  },
+  {
+    "id": "#CB33WNB",
+    "customer": "k lokesh Reddy",
+    "email": "lokireddy32457@gmail.com",
+    "items": [
+      {
+        "id": 1,
+        "name": "Masala Dosa",
+        "description": "Crispy dosa with spiced potato filling",
+        "price": 45,
+        "rating": 4.5,
+        "prepTime": 8,
+        "category": "Breakfast",
+        "badge": "Bestseller",
+        "image": "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop",
+        "active": true,
+        "quantity": 4
+      }
+    ],
+    "items_list": "Masala Dosa x4",
+    "total": 189,
+    "time": "02:19",
+    "createdAt": "2026-05-17T20:49:58.660Z",
+    "status": "Pending",
+    "timeSlotId": 1,
+    "timeSlot": "8:00 AM - 8:30 AM",
+    "instructions": ""
+  }
+]

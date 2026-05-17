@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "email": "user@gmail.com",
+    "password": "$2a$10$Hj4VsGYhUdqXkimWsA91AO41O0KDtpotHpB4bVbewMb1rEBdx0cbS",
+    "name": "Google User",
+    "role": "user"
+  },
+  {
+    "id": 2,
+    "email": "lokesh@sample.com",
+    "password": "$2a$10$dJ5xnTuOvI4N1xVV.W5Tm.cFg59KjvVMlwC3qVbnzoDhpIB0FO27.",
+    "name": "lokesh",
+    "role": "user"
+  },
+  {
+    "id": 3,
+    "email": "standard@gmail.com",
+    "password": "$2a$10$/2d5vCakhggURvAq3DR5TOIFffPggmPSAAmGwteMNxF65rnzDJTkC",
+    "name": "Standard User",
+    "role": "user"
+  },
+  {
+    "id": 4,
+    "email": "iuhbk@ex.com",
+    "password": "$2a$10$0VFX07JqllwVb9qYW1A43O2s1NP/uuAfsOi0PIUBkSiG4x07kD5ym",
+    "name": "iyfhgcvh",
+    "role": "user"
+  },
+  {
+    "id": 5,
+    "email": "lokireddy32457@gmail.com",
+    "password": "$2a$10$lcxcBE3.uunloGPqIFfG2uZvSRA24paYNE.gGt50BWp99YVe2P6xW",
+    "name": "k lokesh Reddy",
+    "role": "user"
+  },
+  {
+    "id": 6,
+    "email": "admin@gmail.com",
+    "password": "$2a$10$wsBUjhVuK1l2nbHbTOYt.Ob5bxaSO9moKMoYdMXLsm6oitFfp9fBa",
+    "name": "Admin User",
+    "role": "user"
+  },
+  {
+    "id": 7,
+    "email": "admin@admin.com",
+    "password": "$2a$10$mszrNAwGEEurqcJ2064wmulbSrlrCM.gcaclLchkHmQ0opRaTQSba",
+    "name": "Admin",
+    "role": "user"
+  },
+  {
+    "id": 8,
+    "email": "admin@adu.edu",
+    "password": "$2a$10$gfbdoz23twr84EPJjla7YuaG1ELczsKGTS6ArUSUMXxm3g1JtPUsq",
+    "name": "Admin",
+    "role": "user"
+  },
+  {
+    "id": 9,
+    "email": "admin@canteen.com",
+    "password": "$2a$10$Y1pGPLbT.StFF1pL5dfW7eoxvXZUfxJpsP7krlgFNtzm4.sa7l4Yu",
+    "name": "Admin",
+    "role": "user"
+  }
+]

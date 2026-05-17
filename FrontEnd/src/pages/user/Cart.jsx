@@ -25,6 +25,7 @@ const Cart = () => {
     const newOrder = {
       id: generateOrderId(),
       customer: user?.name || "Current User",
+      email: user?.email || "",
       items: [...cart],
       items_list: cart.map(item => `${item.name} x${item.quantity}`).join(", "),
       total: rawTotal + Math.round(rawTotal * 0.05),
@@ -88,7 +89,7 @@ const Cart = () => {
 
       <div className="max-w-2xl mx-auto w-full pb-8 ">
         {/* Cart Items */}
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-4">
           {cart.map((item) => (
             <div key={item.id} className="flex items-center justify-between p-4 border rounded-xl border-slate-900 mx-4 ">
               <div>

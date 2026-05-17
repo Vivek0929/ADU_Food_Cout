@@ -129,7 +129,7 @@ export const apiService = {
     },
 
     async updateStatus(id, status) {
-      const res = await fetch(`${API_URL}/api/orders/${id}/status`, {
+      const res = await fetch(`${API_URL}/api/orders/${encodeURIComponent(id)}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),

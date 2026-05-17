@@ -3,6 +3,7 @@ import { CanteenProvider } from "./context/CanteenContext";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 import Home from "./pages/user/Home";
 import LandingPage from "./components/LandingPage";
+import UserDashboard from "./pages/user/UserDashboard";
 import Cart from "./pages/user/Cart";
 import Orders from "./pages/user/Orders";
 import Profile from "./pages/user/Profile";
@@ -19,22 +20,26 @@ function App() {
     <CanteenProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public routes accessible before login */}
+          <Route path="/" element={<LandingPage showHero={true} />} />
           <Route path="/login" element={<Login />} />
+
+          {/* Authenticated user routes layout */}
           <Route
-            path="/"
             element={
               <ProtectedRoute>
                 <Home />
               </ProtectedRoute>
             }
           >
-            <Route index element={<LandingPage showHero={true} />} />
-            <Route path="menu" element={<LandingPage showHero={false} />} />
-            <Route path="cart" element={<Cart />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="/dashboard" element={<UserDashboard showHero={true} />} />
+            <Route path="/menu" element={<UserDashboard showHero={false} />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
+          {/* Authenticated admin routes layout */}
           <Route
             path="/admin"
             element={
@@ -49,7 +54,7 @@ function App() {
             <Route path="slots" element={<AdminSlots />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </CanteenProvider>

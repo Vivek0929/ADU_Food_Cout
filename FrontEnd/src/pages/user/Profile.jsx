@@ -55,7 +55,7 @@ const Profile = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {/* Orders Stat */}
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
@@ -74,16 +74,6 @@ const Profile = () => {
             </div>
             <p className="text-4xl font-black text-slate-900">{completedOrders}</p>
             <p className="text-xs text-slate-400 mt-2 font-medium">Successfully delivered</p>
-          </div>
-
-          {/* Spent Stat */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-500 font-semibold text-sm">Spent</span>
-              <TrendingUp className="text-blue-500" size={24} />
-            </div>
-            <p className="text-4xl font-black text-slate-900">₹{totalSpent}</p>
-            <p className="text-xs text-slate-400 mt-2 font-medium">Total amount spent</p>
           </div>
         </div>
 

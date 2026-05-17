@@ -47,6 +47,7 @@ const ensureTables = async () => {
       CREATE TABLE IF NOT EXISTS orders (
         id VARCHAR(50) PRIMARY KEY,
         customer VARCHAR(255),
+        email VARCHAR(255),
         items_json TEXT,
         items_list TEXT,
         total DECIMAL(10, 2),
@@ -58,6 +59,14 @@ const ensureTables = async () => {
         instructions TEXT
       )
     `);
+
+    // Ensure email column exists if table was already created
+    try {
+      await pool.query(`ALTER TABLE orders ADD COLUMN email VARCHAR(255)`);
+      console.log("✅ Orders table updated with email column.");
+    } catch (alterErr) {
+      // Column probably already exists or table doesn't exist, safe to ignore
+    }
 
     dbState.dbAvailable = true;
     console.log("✅ Database tables successfully verified!");

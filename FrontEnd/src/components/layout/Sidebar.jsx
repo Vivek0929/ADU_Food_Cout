@@ -11,7 +11,7 @@ const Sidebar = () => {
   const activePath = location.pathname;
 
   const userMenuItems = [
-    { icon: <Home size={18} />, label: "Home", path: "/" },
+    { icon: <Home size={18} />, label: "Home", path: "/dashboard" },
     { icon: <UtensilsCrossed size={18} />, label: "Menu", path: "/menu" },
     { icon: <ShoppingCart size={18} />, label: "Cart", path: "/cart", hasBadge: true },
     { icon: <ClipboardList size={18} />, label: "Orders", path: "/orders" },
