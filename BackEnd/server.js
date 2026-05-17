@@ -5,7 +5,10 @@ import cookieParser from 'cookie-parser';
 import pool, { dbState } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import foodRoutes from './routes/foodRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 import { ensureUsersFile, getAllUsers } from './controllers/authController.js';
+import { ensureOrdersFile } from './controllers/orderController.js';
+import { ensureFoodsFile } from './controllers/foodController.js';
 
 dotenv.config();
 
@@ -39,13 +42,32 @@ const ensureTables = async () => {
       )
     `);
 
+    // Orders Table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id VARCHAR(50) PRIMARY KEY,
+        customer VARCHAR(255),
+        items_json TEXT,
+        items_list TEXT,
+        total DECIMAL(10, 2),
+        time VARCHAR(100),
+        created_at DATETIME,
+        status VARCHAR(50) DEFAULT 'Pending',
+        timeSlotId INT,
+        timeSlot VARCHAR(100),
+        instructions TEXT
+      )
+    `);
+
     dbState.dbAvailable = true;
     console.log("✅ Database tables successfully verified!");
   } catch (err) {
     console.warn('⚠️ Database tables initialization failed, falling back to file store:', err.message || err);
     dbState.dbAvailable = false;
-    // ensure local users store exists as a fallback
+    // ensure local stores exist as a fallback
     await ensureUsersFile();
+    await ensureOrdersFile();
+    await ensureFoodsFile();
   }
 };
 
@@ -59,6 +81,7 @@ app.get("/", (req, res) => {
 // --- Register Modular API Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/food', foodRoutes);
+app.use('/api/orders', orderRoutes);
 app.get('/api/admin/users', getAllUsers);
 
 // --- Start Server ---

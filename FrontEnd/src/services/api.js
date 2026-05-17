@@ -103,5 +103,41 @@ export const apiService = {
       if (!res.ok) throw new Error(data?.error || 'Failed to fetch users');
       return data;
     }
+  },
+
+  // Orders API Methods
+  orders: {
+    async getAll() {
+      const res = await fetch(`${API_URL}/api/orders`, {
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to fetch orders');
+      return data;
+    },
+
+    async create(orderData) {
+      const res = await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to create order');
+      return data;
+    },
+
+    async updateStatus(id, status) {
+      const res = await fetch(`${API_URL}/api/orders/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+        credentials: 'include'
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to update order status');
+      return data;
+    }
   }
 };

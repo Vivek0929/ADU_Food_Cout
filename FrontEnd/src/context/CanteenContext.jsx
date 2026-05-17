@@ -81,6 +81,19 @@ export const CanteenProvider = ({ children }) => {
       .catch(err => console.error("Failed to fetch menu items:", err));
   }, []);
 
+  // Fetch orders from backend
+  useEffect(() => {
+    if (isAuthenticated) {
+      apiService.orders.getAll()
+        .then(data => {
+          if (Array.isArray(data)) {
+            setOrders(data);
+          }
+        })
+        .catch(err => console.error("Failed to fetch orders:", err));
+    }
+  }, [isAuthenticated]);
+
   // Admin Actions
   const toggleMenuItem = (id) => {
     setMenuItems(prev => prev.map(item => item.id === id ? { ...item, active: !item.active } : item));
@@ -114,16 +127,29 @@ export const CanteenProvider = ({ children }) => {
     setTimeSlots(prev => [...prev, { ...slot, id: Date.now(), booked: 0, active: true }]);
   };
 
-  const updateOrderStatus = (id, status) => {
-    setOrders(prev => prev.map(order => order.id === id ? { ...order, status } : order));
+  const updateOrderStatus = async (id, status) => {
+    try {
+      await apiService.orders.updateStatus(id, status);
+      setOrders(prev => prev.map(order => order.id === id ? { ...order, status } : order));
+    } catch (err) {
+      console.error("Failed to update order status:", err);
+      alert("Error updating order status. Please try again.");
+    }
   };
 
   // User Actions
-  const placeOrder = (newOrder) => {
-    setOrders(prev => [newOrder, ...prev]);
-    // Also increment booked count on timeslot
-    if (newOrder.timeSlotId) {
-      setTimeSlots(prev => prev.map(slot => slot.id === newOrder.timeSlotId ? { ...slot, booked: slot.booked + 1 } : slot));
+  const placeOrder = async (newOrder) => {
+    try {
+      const createdOrder = await apiService.orders.create(newOrder);
+      setOrders(prev => [createdOrder, ...prev]);
+      // Also increment booked count on timeslot
+      if (newOrder.timeSlotId) {
+        setTimeSlots(prev => prev.map(slot => slot.id === newOrder.timeSlotId ? { ...slot, booked: slot.booked + 1 } : slot));
+      }
+    } catch (err) {
+      console.error("Failed to place order:", err);
+      alert("Error placing order. Please try again.");
+      throw err;
     }
   };
 
