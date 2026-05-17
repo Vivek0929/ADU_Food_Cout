@@ -88,7 +88,7 @@ export const signup = async (req, res) => {
 
     const user = { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role };
     const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'lax' });
+    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: true });
     res.json({ user });
   } catch (err) {
     console.error(err);
@@ -109,7 +109,7 @@ export const login = async (req, res) => {
     if (envAdminEmail && envAdminPass && email === envAdminEmail && password === envAdminPass) {
       const user = { id: 0, email: envAdminEmail, name: 'Super Admin', role: 'admin' };
       const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'lax' });
+      res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: true });
       return res.json({ user });
     }
 
@@ -122,7 +122,7 @@ export const login = async (req, res) => {
 
     const user = { id: userRow.id, email: userRow.email, name: userRow.name, role: userRow.role };
     const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'lax' });
+    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000, sameSite: 'none', secure: true });
     res.json({ user });
   } catch (err) {
     console.error(err);
@@ -141,14 +141,14 @@ export const me = async (req, res) => {
     return res.json({ user });
   } catch (err) {
     console.error('me error', err);
-    res.clearCookie('token');
+    res.clearCookie('token', { httpOnly: true, sameSite: 'none', secure: true });
     return res.status(200).json({ user: null });
   }
 };
 
 // LOGOUT
 export const logout = (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', { httpOnly: true, sameSite: 'none', secure: true });
   res.json({ ok: true });
 };
 

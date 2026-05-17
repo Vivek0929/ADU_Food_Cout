@@ -34,6 +34,7 @@ export const CanteenProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
   // Initialize auth state from backend (httpOnly cookie)
   useEffect(() => {
@@ -55,6 +56,9 @@ export const CanteenProvider = ({ children }) => {
           setUser(null);
           setIsAuthenticated(false);
         }
+      })
+      .finally(() => {
+        if (mounted) setIsLoadingAuth(false);
       });
     return () => { mounted = false; };
   }, []);
@@ -194,7 +198,7 @@ export const CanteenProvider = ({ children }) => {
       timeSlots, setTimeSlots, toggleTimeSlot, resetTimeSlot, deleteTimeSlot, addTimeSlot,
       orders, setOrders, updateOrderStatus, placeOrder,
       cart, setCart,
-      user, isAuthenticated, login, signup, logout
+      user, isAuthenticated, isLoadingAuth, login, signup, logout
     }}>
       {children}
     </CanteenContext.Provider>
