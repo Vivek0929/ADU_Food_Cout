@@ -10,8 +10,8 @@ import {
   ChevronRight,
   QrCode,
 } from "lucide-react";
-import { useCanteen } from "../context/CanteenContext";
-import { generateOrderId } from "../utils/orderUtils";
+import { useCanteen } from "../../context/CanteenContext";
+import { generateOrderId } from "../../utils/orderUtils";
 
 // ─── Status config ─────────────────────────────────────────────────────────────
 const STATUS_STEPS = [
@@ -256,13 +256,6 @@ const Orders = () => {
   const activeOrders = orders.filter((o) => o.status !== "Completed" && o.status !== "Delivered");
   const pastOrders = orders.filter((o) => o.status === "Completed" || o.status === "Delivered");
 
-  const demoOrders = [
-    { id: "#CBWHAOA", status: "Completed", items_list: "Masala Dosa x2", time: "Today, 10:30 AM", total: 90 },
-    { id: "#CBC12O3", status: "Completed", items_list: "Veg Biryani, Lassi", time: "Yesterday, 1:15 PM", total: 120 },
-  ];
-
-  const displayPast = pastOrders.length > 0 ? pastOrders : demoOrders;
-
   return (
     <div className="flex-1 p-6 bg-[#F8F9FF] overflow-y-auto">
       <div className="max-w-2xl mx-auto">
@@ -284,14 +277,16 @@ const Orders = () => {
         )}
 
         {/* Past orders */}
-        <section>
-          <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Past Orders</h2>
-          <div className="space-y-3">
-            {displayPast.map((order, idx) => (
-              <OrderCard key={order.id ?? idx} order={order} onClick={() => setSelectedOrder(order)} />
-            ))}
-          </div>
-        </section>
+        {pastOrders.length > 0 && (
+          <section>
+            <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Past Orders</h2>
+            <div className="space-y-3">
+              {pastOrders.map((order, idx) => (
+                <OrderCard key={order.id ?? idx} order={order} onClick={() => setSelectedOrder(order)} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Empty state */}
         {orders.length === 0 && activeOrders.length === 0 && (

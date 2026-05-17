@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useCanteen } from '../context/CanteenContext';
+import { useCanteen } from '../../context/CanteenContext';
 import { Mail, Shield, LogOut, ChevronRight, Clock, CheckCircle, TrendingUp } from 'lucide-react';
 
 const Profile = () => {

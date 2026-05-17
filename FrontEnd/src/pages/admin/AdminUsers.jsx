@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { User, Mail, ShieldCheck, Clock } from "lucide-react";
+import { apiService } from "../../services/api";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -9,11 +10,7 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/admin/users", {
-          credentials: 'include'
-        });
-        if (!response.ok) throw new Error("Failed to fetch users");
-        const data = await response.json();
+        const data = await apiService.admin.getAllUsers();
         setUsers(data);
       } catch (err) {
         setError(err.message);

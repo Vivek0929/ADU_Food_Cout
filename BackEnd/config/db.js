@@ -10,4 +10,9 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
+// Shared state object so controllers can track/toggle DB availability status
+export const dbState = {
+  dbAvailable: true
+};
+
 export default pool;

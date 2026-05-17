@@ -1,12 +1,12 @@
 import { ShoppingCart, ArrowLeft, Trash2, Plus, Minus, Clock } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCanteen } from "../context/CanteenContext";
-import { generateOrderId } from "../utils/orderUtils";
+import { useCanteen } from "../../context/CanteenContext";
+import { generateOrderId } from "../../utils/orderUtils";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { timeSlots, cart, setCart, placeOrder } = useCanteen();
+  const { timeSlots, cart, setCart, placeOrder, user } = useCanteen();
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [specialInstructions, setSpecialInstructions] = useState("");
 
@@ -24,7 +24,7 @@ const Cart = () => {
     const rawTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const newOrder = {
       id: generateOrderId(),
-      customer: "Current User",
+      customer: user?.name || "Current User",
       items: [...cart],
       items_list: cart.map(item => `${item.name} x${item.quantity}`).join(", "),
       total: rawTotal + Math.round(rawTotal * 0.05),

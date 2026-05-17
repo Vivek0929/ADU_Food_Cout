@@ -1,8 +1,8 @@
 import { Home as HomeIcon, UtensilsCrossed, ShoppingCart, ClipboardList, User } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useCanteen } from "../context/CanteenContext";
-import Sidebar from "../components/Sidebar";
-import { Header } from "../components/Header";
+import { useCanteen } from "../../context/CanteenContext";
+import Sidebar from "../../components/layout/Sidebar";
+import { Header } from "../../components/layout/Header";
 
 const Home = () => {
   const navigate = useNavigate();

@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CanteenProvider } from "./context/CanteenContext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Home from "./pages/Home";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import Home from "./pages/user/Home";
 import LandingPage from "./components/LandingPage";
-import Cart from "./pages/Cart";
-import Orders from "./pages/Orders";
-import Profile from "./pages/Profile";
+import Cart from "./pages/user/Cart";
+import Orders from "./pages/user/Orders";
+import Profile from "./pages/user/Profile";
 import Login from "./pages/Login";
 
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -19,9 +19,7 @@ function App() {
     <CanteenProvider>
       <BrowserRouter>
         <Routes>
-
           <Route path="/login" element={<Login />} />
-
           <Route
             path="/"
             element={

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Star, Clock, Plus, Minus, Search } from "lucide-react";
+import { apiService } from "../../services/api";
 
 const categories = ["All", "Breakfast", "Lunch", "Snacks", "Beverages", "Desserts"];
 
@@ -25,8 +26,7 @@ export function MenuPage({ searchQuery, cart, onCartUpdate, onSearchChange }) {
     const [foods, setFoods] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/food")
-            .then((res) => res.json())
+        apiService.food.getAllFoods()
             .then((data) => setFoods(data))
             .catch(err => console.error("Error fetching foods:", err));
     }, []);

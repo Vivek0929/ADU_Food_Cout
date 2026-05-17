@@ -1,9 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { apiService } from '../services/api';
 
 const CanteenContext = createContext();
-
-// API base
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const INITIAL_MENU_ITEMS = [
   { id: 1, name: "Masala Dosa", description: "Crispy dosa with spiced potato filling", price: 45, rating: 4.5, prepTime: 8, category: "Breakfast", badge: "Bestseller", image: "https://images.unsplash.com/photo-1708146464361-5c5ce4f9abb6?w=400&h=300&fit=crop", active: true },
@@ -27,13 +25,7 @@ const INITIAL_TIME_SLOTS = [
   { id: 7, time: "4:00 PM - 4:30 PM", capacity: 20, booked: 0, active: true },
 ];
 
-const INITIAL_ORDERS = [
-  { id: "#CBWHAOA", customer: "Pranav Subbareddy", items_list: "Masala Dosa x2", total: 90, status: "Completed", timeSlot: "8:00 AM - 8:30 AM", time: "03:48 PM" },
-  { id: "#CBC12O3", customer: "Pranav Subbareddy", items_list: "Masala Dosa x5", total: 225, status: "Completed", timeSlot: "8:00 AM - 8:30 AM", time: "03:48 PM" },
-  { id: "#CBLWKWD", customer: "Vivekananda Chary", items_list: "Masala Dosa x1", total: 45, status: "Pending", timeSlot: "8:00 AM - 8:30 AM", time: "07:12 PM" },
-  { id: "#CBGINAA", customer: "Vivekananda Chary", items_list: "Masala Dosa x2", total: 90, status: "Pending", timeSlot: "8:00 AM - 8:30 AM", time: "01:43 PM" },
-  { id: "#CBC7NN3", customer: "Vivekananda Chary", items_list: "Veg Biryani x1", total: 80, status: "Completed", timeSlot: "8:00 AM - 8:30 AM", time: "08:59 AM" },
-];
+const INITIAL_ORDERS = [];
 
 export const CanteenProvider = ({ children }) => {
   const [menuItems, setMenuItems] = useState(INITIAL_MENU_ITEMS);
@@ -46,8 +38,7 @@ export const CanteenProvider = ({ children }) => {
   // Initialize auth state from backend (httpOnly cookie)
   useEffect(() => {
     let mounted = true;
-    fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
-      .then(res => res.json())
+    apiService.auth.getCurrentUser()
       .then(data => {
         if (!mounted) return;
         if (data && data.user) {
@@ -60,17 +51,17 @@ export const CanteenProvider = ({ children }) => {
       })
       .catch(err => {
         console.error('Auth init failed', err);
-        setUser(null);
-        setIsAuthenticated(false);
+        if (mounted) {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
       });
     return () => { mounted = false; };
   }, []);
 
-
-
+  // Fetch foods from backend
   useEffect(() => {
-    fetch(`${API_URL}/api/food`, { credentials: 'include' })
-      .then(res => res.json())
+    apiService.food.getAllFoods()
       .then(data => {
         if (Array.isArray(data)) {
           const formattedData = data
@@ -139,14 +130,7 @@ export const CanteenProvider = ({ children }) => {
   // Authentication Functions
   const login = async (email, password) => {
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Login failed');
+      const data = await apiService.auth.login(email, password);
       setUser(data.user);
       setIsAuthenticated(true);
       return data.user;
@@ -158,14 +142,7 @@ export const CanteenProvider = ({ children }) => {
 
   const signup = async (email, password, name) => {
     try {
-      const res = await fetch(`${API_URL}/api/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password, name })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Signup failed');
+      const data = await apiService.auth.signup(email, password, name);
       setUser(data.user);
       setIsAuthenticated(true);
       return data.user;
@@ -177,7 +154,7 @@ export const CanteenProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+      await apiService.auth.logout();
     } catch (e) {
       console.warn('logout request failed', e);
     }
@@ -198,5 +175,4 @@ export const CanteenProvider = ({ children }) => {
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useCanteen = () => useContext(CanteenContext);

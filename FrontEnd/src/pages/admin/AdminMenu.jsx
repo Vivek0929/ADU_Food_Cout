@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useCanteen } from "../../context/CanteenContext";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
+import { apiService } from "../../services/api";
 
 const CATEGORIES = ["All", "Breakfast", "Lunch", "Snacks", "Beverages", "Desserts"];
 
@@ -51,15 +52,8 @@ const AdminMenu = () => {
   const handleDeleteClick = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      const response = await fetch(`${baseUrl}/api/food/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        deleteMenuItem(id);
-      } else {
-        alert("Failed to delete item");
-      }
+      await apiService.food.deleteFood(id);
+      deleteMenuItem(id);
     } catch (error) {
       console.log(error);
       alert("Error deleting item");
@@ -71,27 +65,12 @@ const AdminMenu = () => {
     if (!newItem.name || !newItem.price) return;
 
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      const url = editingId 
-        ? `${baseUrl}/api/food/${editingId}`
-        : `${baseUrl}/api/food`;
-      
-      const method = editingId ? "PUT" : "POST";
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newItem),
-      });
-
-      const data = await response.json();
-      
       if (editingId) {
+        await apiService.food.updateFood(editingId, newItem);
         editMenuItem(editingId, { ...newItem, price: Number(newItem.price) });
         alert("Food Updated Successfully");
       } else {
+        const data = await apiService.food.addFood(newItem);
         addMenuItem({ ...newItem, id: data.id, price: Number(newItem.price) });
         alert("Food Added Successfully");
       }

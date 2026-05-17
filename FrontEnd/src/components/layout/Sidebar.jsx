@@ -1,6 +1,6 @@
 import { Home, UtensilsCrossed, ShoppingCart, ClipboardList, User, Shield } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCanteen } from "../context/CanteenContext";
+import { useCanteen } from "../../context/CanteenContext";
 
 const Sidebar = () => {
   const location = useLocation();

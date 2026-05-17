@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Bell, ChevronDown, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCanteen } from "../context/CanteenContext";
+import { useCanteen } from "../../context/CanteenContext";
 
 export function Header() {
   const [notifOpen, setNotifOpen] = useState(false);

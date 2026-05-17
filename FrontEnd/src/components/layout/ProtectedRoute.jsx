@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useCanteen } from '../context/CanteenContext';
+import { useCanteen } from '../../context/CanteenContext';
 
 export const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { isAuthenticated, user } = useCanteen();
